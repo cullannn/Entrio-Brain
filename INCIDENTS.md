@@ -1,0 +1,119 @@
+# Incident log
+
+Bugs that actually happened, with root causes and the lesson each one left
+behind. The fixes are in git; the lessons are why this file exists. Newest
+last — append.
+
+---
+
+### 2026-07-31 — AVIF that decodes but paints transparent
+macOS `sips` can emit an AVIF with valid headers, correct dimensions, and
+invisible pixels; `<picture>` selects by MIME and never falls back.
+**Lesson:** verify images by drawing to a canvas and sampling pixels —
+`img.complete` and `naturalWidth` both lie. Encoded into `npm run photos`
+(pixel-verified manifest).
+
+### 2026-08-02 — "31 guest names" that were two strings
+A Hostaway feed was checked for PII by masking letters; 31 identical
+"by Hostaway" summaries were read as 31 real names, and vendor boilerplate
+nearly shipped as guests' display names.
+**Lesson:** when masking data to inspect it, count *distinct* values first.
+
+### 2026-08-02 — Cancelled stay on the Now tab, "night 11 of 17", in green
+Status was written once at creation and never advanced; timing was derived
+from dates, which a cancelled booking still has.
+**Lesson:** dates answer "where is this stay"; the stored status is
+authoritative only for what dates can't express (cancelled, inquiry) — and
+cancelled must win over every other rule.
+
+### 2026-08-02 — `* { min-width: 0 }` outside a cascade layer
+Killed every `min-w-*` utility in the app: unlayered rules beat
+`@layer utilities` regardless of specificity in Tailwind v4.
+**Lesson:** resets go in `@layer base`, always.
+
+### 2026-08-02 — "Clear the sample" would have deleted a real property
+A seeded property that a host has renamed and wired to a real calendar is
+still a seed row underneath; the button dropped all seed rows.
+**Lesson:** the offer to clear sample data must withdraw itself the moment a
+seed row carries real work (a booking from the host's own channel).
+
+### 2026-08-03 — The guidebook vanished (data intact on disk)
+`seed:mine` rebuilt the guidebook from ids scraped out of the seed *source*
+(`[{ id }]`), betting the store would fill in the rest. It didn't; every
+section lost its `chapter`; both the editor and portal find sections by
+filtering on chapter, so all six were on disk and on no screen.
+**Lessons:** (1) import fixtures, never parse them as text; (2) merge
+weakest-first (seed → stored patch → private file) so damage self-heals;
+(3) data that filters can orphan needs a read-side safety net — chapterless
+sections now land in "house" instead of nowhere.
+
+### 2026-08-03 — Entitlement bug, three times, same shape
+`!verification.idVerified` read raw at three call sites (door gate, guest
+checklist, host dashboard), ignoring plan entitlement and property mode.
+Symptoms ranged from a guest stranded at the door to a Basic host nagged
+weekly about a feature they don't have.
+**Lesson:** when a check depends on facts from two places (plan + property),
+give it one domain function and *forbid* the raw read — enforced by a
+source-scanning test with a documented allowlist.
+
+### 2026-08-03 — Hydration error on the only door into the app
+A `<form>` inside a `<p>` on `/verify`: the HTML parser closes the paragraph
+first, server markup ≠ DOM, React throws on every visit — on the page whose
+client-side auto-submit sends the OTP.
+**Lesson:** invalid HTML nesting isn't cosmetic in React; the parser
+rewrites it and hydration pays.
+
+### 2026-08-03 — "Add a property" made two blank properties
+Create, refresh, then scroll-to-card after 120 ms — a bet on a server round
+trip. Losing it left no visible change, so the natural move was clicking
+again.
+**Lesson:** navigate to the thing you created; never sequence UI on a timer
+against a network.
+
+### 2026-08-03 — The audit that certified nothing
+`audit:guest` (the wire-level check on the core promise) had two independent
+false-pass modes: it never checked HTTP status (404 pages "withheld"
+everything), and its seed parser searched *backwards* 1200 chars, matching
+the previous reservation's door code — so it grepped pages for a number that
+appears nowhere while a real code sat on the wire.
+**Lessons:** (1) a guard must prove the page is a page before concluding
+anything from its absence of secrets; (2) "all clear" must state what it
+cleared; (3) parse fixtures forward within the owning object, or better,
+import them.
+
+### 2026-08-03 — Live entry-code leak on the default plan
+Three deliberate behaviours composed: release-on-booking (sample property) +
+`idCheck` defaulting to mandatory + identity checks being Plus-only, which
+collapses the gate on Basic. Both gates open → code, wi-fi and unit served
+to an unverified guest six days early, on every Basic account. Hidden by the
+broken audit above.
+**Lessons:** (1) safe-in-isolation decisions need a composition check — now
+`nothingWithholdsCode()` warns on the property page; (2) release-on-booking
+must never be a shipped default.
+
+### 2026-08-03 — Top-level merge destroyed the identity record
+`patchReservation(id, { verification: { idVerified } })` replaced the whole
+object, losing the Stripe session id and failed/mismatch flags — downgrading
+"Failed, message them now" to "Awaiting", permanently orphaning the guest's
+retry.
+**Lesson:** patch semantics are top-level; spread nested objects explicitly.
+Same family: writing a pre-`await` snapshot back after a network call
+reverts anything a webhook wrote in between (four sites, still open — see
+TODO).
+
+### 2026-08-03 — Hour-granular sale windows quantised to days
+Upsell availability compared midnight-to-midnight, so an offset of "-4
+hours" could never exist; Early arrival ($75) vanished at midnight before
+arrival day — the exact morning it sells.
+**Lesson:** measure "hours until" against the real instant (zoned check-in
+time), never day arithmetic; DST skew disappears with it.
+
+### 2026-08-03 — Assorted, one line each
+`writeFileSync` truncate-in-place + silent corrupt-file recovery = full data
+loss path (atomic rename + loud failure now; then SQLite). · Guidebook
+template tokens (`{{reservation.doorCode}}`) bypassed the gate the entry
+card enforced. · `NaN` payout became $0 silently. · A guest's upsell request
+had no error path — sold-out threw into a transition and froze the button at
+"Asking…". · Preview preferred real bookings, which silently removed the
+before/after toggle. · Verification email promised "no account will be
+created", which was false.

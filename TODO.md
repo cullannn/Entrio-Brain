@@ -1,0 +1,62 @@
+# Open items
+
+Kept current — move things to DECISIONS/INCIDENTS when done, don't just
+delete them.
+
+## Deferred code findings (from the 2026-08-03 review)
+
+- [ ] **Stale-snapshot writes across `await`** (4 sites): a reservation is
+      read, a network call awaited, then the *pre-await* snapshot written
+      back — reverting anything a Stripe webhook wrote in the gap. Fix:
+      re-read immediately before each patch. (Identity session creation,
+      webhook handlers.) Narrow window, real.
+- [ ] **Guests are never deleted** — `deleteReservation`/`deleteProperty`
+      leave orphaned guest rows (name/email/phone) forever. Unbounded growth
+      + a retention problem.
+- [ ] **`approve/decline/markUpsellPaid` don't check the entry exists** —
+      a no-op that reports success if the id is wrong.
+- [ ] Dead exports: `formatDayShort`, `isRefreshing`. Duplicate
+      `currentOrigin()` (billing + stay actions). Nights arithmetic in three
+      places. Two different `externalIdFor` with the same name.
+- [ ] Doc drift: `domain.ts` "three reasons to hold the code" — now four
+      (`stay_over`).
+
+## Scaling (full plan in SCALING.md)
+
+- [ ] **Stage 1**: back up `.data/overlay.db` off-box (Litestream/cron
+      `.backup`) — highest-value item, do first. Batch the calendar cron
+      (oldest-first, time budget). Webhook `event.id` dedupe. Reset-token
+      digest lookup.
+- [ ] **Stage 2**: managed Postgres behind the store contract; normalised,
+      indexed, scoped queries; retire the in-memory world model for real
+      data.
+- [ ] **Stage 3**: photos → object storage + CDN; queued calendar jobs;
+      Sentry + structured logs.
+
+## Deploy checklist (before entrio.ca goes live)
+
+- [ ] `ENTRIO_SITE_URL` → https://entrio.ca (still localhost; reset/verify
+      links break otherwise).
+- [ ] entrio.ca A record still parked — point it at the deployment.
+- [ ] Confirm `ENTRIO_DEMO_DATA` is off (defaults off when
+      `NODE_ENV=production`, but verify).
+- [ ] `ENTRIO_CRON_SECRET` set + a scheduler hitting `/api/calendars/sync`.
+- [ ] Real Stripe webhook endpoint + signing secret (not the CLI's).
+- [ ] Persistent disk or object storage for `public/photos/uploads`.
+- [ ] Backups running (Stage 1) before the first real host.
+
+## Product backlog / not built
+
+- [ ] Hostaway against a live API (blocked: user has no credentials; PM
+      holds the account).
+- [ ] Hospitable real integration (needs OAuth2 + registered client).
+- [ ] Automations / messaging — **cut on purpose** (DECISIONS 2026-08-01);
+      do not reintroduce without being asked.
+- [ ] A live unverified test account exists in local data — offered to
+      remove it, no answer yet. (Details in local memory, not here — public
+      repo.)
+
+## Housekeeping
+
+- [ ] Keep this brain updated every session that changes architecture,
+      scope, or key behaviour (protocol in README).
