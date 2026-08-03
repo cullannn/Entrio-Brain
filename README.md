@@ -14,6 +14,7 @@ code is the way it is** lives here.
 | [SECURITY.md](SECURITY.md) | The gate model, tenancy rules, and how they're enforced |
 | [INCIDENTS.md](INCIDENTS.md) | Bugs that happened, root causes, and the lessons encoded |
 | [SCALING.md](SCALING.md) | The 1000-host assessment and the staged upgrade plan |
+| [DEPLOYMENT.md](DEPLOYMENT.md) | Cloud architecture for going live on entrio.ca (proposal → decided) |
 | [CONVENTIONS.md](CONVENTIONS.md) | Design language, testing rules, code conventions |
 | [INTEGRATIONS.md](INTEGRATIONS.md) | Stripe, Google Places, Anthropic, iCal, Resend, channel managers |
 | [TODO.md](TODO.md) | Open items, deferred findings, deploy checklist |
