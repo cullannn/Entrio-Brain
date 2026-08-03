@@ -1,6 +1,6 @@
 # Deployment architecture (decided)
 
-*Decided 2026-08-03. Status: **steps 1–2 (Postgres, R2 photos) done; steps 3–4 (containerize, deploy) pending.***
+*Decided 2026-08-03. Status: **steps 1–3 (Postgres, R2 photos, containerize) done; step 4 (deploy to Render) pending.***
 
 Goal: Entrio live on **entrio.ca**, scalable to 1000+ hosts, run **cheaply and
 predictably**. The cloud shape is settled; the local upgrades follow from it.
@@ -77,9 +77,21 @@ uploads need durable storage, since the container wipes `public/` on redeploy.
 - Serving needs no config: `Photo` is a plain `<img>`, so absolute URLs and the
   existing `/photos/*` paths both just work.
 
-### 3. Containerize for Render
-`output: "standalone"` in `next.config`, a `Dockerfile` (or Render's native
-Node build), healthcheck, and env-var wiring. No app-logic change.
+### 3. Containerize for Render *(DONE 2026-08-03)*
+`output: "standalone"` emits a self-contained server; a multi-stage Dockerfile
+(node:22-slim, non-root user) installs, builds, and ships only that output —
+`public/` and `.next/static/` copied in beside `server.js`. `/api/health` pings
+Postgres (503 if it can't), so the platform pulls an instance that can't reach
+the DB rather than serving 500s.
+- **`NEXT_PUBLIC_*` is inlined at build, not read at run time**, so the Stripe
+  publishable key is a **Docker build arg** (set it as a *build-time* var on
+  Render), not just a runtime env var. It's the only NEXT_PUBLIC var, and it's
+  public by design, so baking it into the image is expected.
+- Node isn't pinned in the repo; the image fixes it at 22-slim (glibc, so sharp's
+  prebuilds and pg's optional bits don't hit musl surprises). sharp is transitive
+  and unused at run time (plain `<img>`, not `next/image`) — no trace tweaks.
+- Verified without Docker (not installed locally) by booting the standalone
+  server directly: health 200, pages and static assets served.
 
 ### 4. Deploy + connect
 Render web service → Postgres (provider picked here) → R2 bucket → Render Cron

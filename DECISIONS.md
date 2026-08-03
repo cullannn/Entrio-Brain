@@ -186,3 +186,17 @@ guest opening a property page pulls images, and that traffic is free. Serving is
 free too — `Photo` is a plain `<img>`, so an absolute `pub-….r2.dev` URL and the
 old `/photos/*` paths both render unchanged. Verified against a live bucket end
 to end. Next: containerize (step 3), then deploy (step 4).
+
+### 2026-08-03 — Step 3 done: containerized for Render
+`output: "standalone"` + a multi-stage Dockerfile (node:22-slim, non-root) that
+ships only the traced build — no `npm install` at run time. A `/api/health` route
+pings Postgres so the platform drops an instance that can't reach the DB. The one
+real subtlety: **`NEXT_PUBLIC_*` is inlined at build time**, so the Stripe
+publishable key is a Docker *build arg*, not a runtime var — the only place the
+"one image, many environments" ideal leaks, and fine here with a single prod
+environment. Deliberately a Dockerfile over Render's native Node build: it's the
+portable artifact, which is the AWS escape hatch SCALING/DEPLOYMENT already lean
+on. Verified by booting the standalone server directly (Docker isn't installed
+locally) — health, pages, and static assets all serve. Only step 4 (create the
+Render service + managed Postgres, wire env/DNS/Stripe webhook/cron) is left, and
+it's dashboard work, not code.
