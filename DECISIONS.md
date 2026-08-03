@@ -153,3 +153,21 @@ can't flag — the vanished-booking channel cancel was one. `pg` is the only new
 dep; provider-agnostic standard SQL so Neon or Render Postgres both fit. Tests
 run against a dedicated `*test*` database, dropped/recreated per suite. Next:
 photos → R2, then containerize + deploy.
+
+### 2026-08-03 — A verified ID that doesn't match the booking flags, doesn't hold the code
+Stripe Identity can come back *verified* with a name that isn't the one on the
+booking (`identityMatchesBooking: "no"`) — the `mismatch` state, shown to the host
+as an "Other name" chip. The mandatory requirement still counts as met, so the
+entry code releases on its normal time gate; the mismatch is the host's cue to
+look, not a second lock. Confirmed deliberate: hosts want an ID on file, a
+surname match is advisory, and the door shouldn't wait on our judgement of one.
+(A real guest verifying their own ID matches; the mismatch is the norm only in
+test mode, where Stripe's test document carries a fixed name.)
+
+### 2026-08-03 — Reservations lead with "Now & next", not one flat upcoming list
+The first tab pairs what's live now with each property's single *nearest* arrival
+— the "and next" a host actually glances for. Every other future stay falls to a
+separate Future tab, so the opening screen stays one-line-per-property instead of
+a forward backlog. Then Past, then All. The nearest-per-property set is computed
+over the same rows the list is drawn from, so filtering to one property narrows
+it too.
