@@ -1,6 +1,6 @@
 # Deployment architecture (decided)
 
-*Proposed and decided 2026-08-03. Status: **decided, build not started.***
+*Decided 2026-08-03. Status: **step 1 (Postgres) done; steps 2–4 pending.***
 
 Goal: Entrio live on **entrio.ca**, scalable to 1000+ hosts, run **cheaply and
 predictably**. The cloud shape is settled; the local upgrades follow from it.
@@ -46,7 +46,7 @@ Litestream, no persistent disk to be a single point of failure.
 
 ## Build order (local work, in sequence)
 
-### 1. Postgres migration — the big piece *(gating everything)*
+### 1. Postgres migration — the big piece *(DONE 2026-08-03)*
 The SCALING.md Stage 2 work, moved to the front. Rewrite the ~30 `store.ts`
 functions as **scoped SQL queries** behind the unchanged contract; normalise
 into indexed tables (`accounts`, `properties`, `reservations`, `guests`,
