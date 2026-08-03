@@ -23,13 +23,17 @@ delete them.
 
 ## Scaling (full plan in SCALING.md)
 
-- [ ] **Stage 1**: back up `.data/overlay.db` off-box (Litestream/cron
-      `.backup`) — highest-value item, do first. Batch the calendar cron
-      (oldest-first, time budget). Webhook `event.id` dedupe. Reset-token
-      digest lookup.
-- [ ] **Stage 2**: managed Postgres behind the store contract; normalised,
-      indexed, scoped queries; retire the in-memory world model for real
-      data.
+- [ ] **Stage 1**: backups are now the Postgres provider's job (pick one with
+      managed backups at deploy). Still open: batch the calendar cron
+      (oldest-first, time budget); webhook `event.id` dedupe; reset-token digest
+      lookup.
+- [x] **Stage 2 (store on Postgres)** — done 2026-08-03. Store queries
+      Postgres scoped by account; demo materialised; async throughout; 14 suites
+      green against a test database. Provider (Neon vs Render PG) still chosen at
+      deploy. Follow-ups: `scripts/apply-private-property.mjs` (seed:mine) and
+      `check-guest-secrets.mjs` still read the retired `.data/overlay.json` —
+      rework for Postgres or retire. Push per-account filtering (status/date)
+      into SQL where hot. Move throttle/sync locks into the DB (multi-instance).
 - [ ] **Stage 3**: photos → object storage + CDN; queued calendar jobs;
       Sentry + structured logs.
 

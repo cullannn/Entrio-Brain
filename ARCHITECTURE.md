@@ -5,7 +5,7 @@
 ## Stack
 
 Next.js 16.2.12 (App Router, Turbopack) · React 19 · TypeScript · Tailwind v4
-· `node:sqlite` for persistence · no ORM, no test framework, no state library.
+· Postgres via `pg` (pooled) · no ORM, no test framework, no state library.
 
 ⚠️ This Next.js version has breaking changes vs. public docs. The main repo's
 `AGENTS.md` says it plainly: read the guides in `node_modules/next/dist/docs/`
@@ -31,7 +31,7 @@ src/app/…            routes + server actions (actions are PUBLIC endpoints)
 src/components/…     host/ and portal/ component trees, ui.tsx primitives
 src/lib/domain.ts    pure business rules — no I/O, fully unit-tested
 src/lib/store.ts     THE data contract (see below)
-src/lib/overlay-db.ts SQLite persistence behind the store
+src/lib/db.ts       Postgres pool + schema behind the store
 src/integrations/    seed, types, ical, places, nearby-ai, hostaway
 src/payments/        Stripe: subscriptions, Connect, Checkout, Identity
 src/emails/          one shell template + messages, inline-styled tables
@@ -42,27 +42,26 @@ src/emails/          one shell template + messages, inline-styled tables
 Every function in `store.ts` takes `accountId` as its **first parameter** and
 every row is keyed `${accountId}:${id}`. Nothing in the app reaches around
 this. Consequence: swapping the storage engine touches one layer — proven on
-2026-08-03 when JSON-file persistence became SQLite without any app-code
-changes. The planned Postgres migration (SCALING.md) rides the same seam.
+JSON-file → SQLite → Postgres, each without app-code changes — the seam held.
 
-### Data model: seed + overlay replay
+### Data model: normalized rows, demo materialised
 
 - `src/integrations/seed.ts` ships two **fictional** properties (The Adelaide,
-  The Yorkville). The seed regenerates relative to *today* on every boot so
-  the demo never goes stale.
-- Everything a user changes lives in an **overlay**: new rows, patches keyed
-  `accountId:id`, and tombstone id-sets. The overlay replays over the seed at
-  build time.
-- Sample data is per-account: each owner in `sampleOwners` gets the seed rows
-  stamped with their id, with portal tokens **derived** per account (SHA-256)
-  so two hosts never share a guest link.
-- Demo data is **off in production** (`demoDataEnabled()`), on in development.
-- Persistence: SQLite (`.data/overlay.db`, WAL). One `entries` table storing
-  the overlay's own shape (record / rows / ids kinds). Writes are diffed **by
-  object identity** in `overlay-db.ts` — the store never mutates a stored
-  object in place, so unchanged rows compare by reference and cost no SQL.
-  A one-time migration imports a legacy `overlay.json` and renames it
-  `.migrated`.
+  The Yorkville) as a fixture. Claiming the demo inserts them as real rows.
+- Sample data is per-account: each owner gets the seed rows stamped with their
+  id, with portal tokens **derived** per account (SHA-256) so two hosts never
+  share a guest link.
+- Demo data is **off in production** (`demoDataEnabled()`), on in development —
+  so production is purely a host's own rows.
+- Persistence: **Postgres** (`src/lib/db.ts`, pooled `pg`), one table per
+  entity — `jsonb data` plus the columns anything queries by (`account_id`,
+  `id`, `portal_token`, `external_id`). Patches are `data || $x::jsonb` (shallow
+  merge, matching the old object spread). The store is **async**; `domain.ts`
+  is pure so the ripple stayed in pages/actions. Provider-agnostic standard SQL.
+- The demo is **materialised, not replayed**: claiming the sample inserts real
+  stamped rows once. No tombstones/patches/regeneration — a delete is a DELETE.
+  (History: was SQLite, and before that a whole-file JSON overlay. See
+  DECISIONS 2026-08-03.)
 
 ## Key flows
 

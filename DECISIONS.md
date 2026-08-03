@@ -125,3 +125,19 @@ tenant-isolation/door-gate/audit:guest stay green as the proof; (2) photos →
 R2; (3) containerize (`output: standalone` + Dockerfile); (4) deploy + wire
 Postgres/R2/cron/DNS/Stripe webhook. Rejected: Vercel (usage-based cost, seat
 floor, same migration up front anyway).
+
+### 2026-08-03 — Step 1 done: the store is on Postgres
+The store queries Postgres scoped by account, retiring the in-memory
+seed+overlay world. **One table per entity: jsonb plus the columns anything
+queries by** (account_id, id, portal_token, external_id) — not column-per-field,
+because nothing filters on nested fields in SQL. Patches are `data || $x::jsonb`
+(shallow, matching the old spread). **The demo is materialised, not replayed** —
+claiming the sample inserts real stamped rows once, which deletes the entire
+tombstone/patch/regenerate machinery (it only existed because seed rows came
+back each boot). Production (demo off) is purely a host's own rows. **The store
+became async** (pg has no sync API); domain.ts being pure confined the ripple to
+pages and actions, and a second sweep caught the floating unawaited writes tsc
+can't flag — the vanished-booking channel cancel was one. `pg` is the only new
+dep; provider-agnostic standard SQL so Neon or Render Postgres both fit. Tests
+run against a dedicated `*test*` database, dropped/recreated per suite. Next:
+photos → R2, then containerize + deploy.
