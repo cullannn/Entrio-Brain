@@ -110,3 +110,18 @@ microservices, Redis, queue infra beyond Stage 3.
 Public repo, so the no-real-details rule applies here with no exceptions.
 Maintenance protocol in README.md; pointer added to the main repo's
 AGENTS.md.
+
+### 2026-08-03 — Cloud architecture decided (full detail in DEPLOYMENT.md)
+Going live on entrio.ca. **Always-on container on Render**, not serverless —
+predictable flat cost, low ops, the app is a long-lived `next start` server.
+**Postgres-first, then deploy** (not a SQLite Phase-0) — the user chose to do
+the storage migration once, properly, so the first deploy is multi-instance-
+ready and there's no second migration. This also drops Litestream: a managed
+Postgres backs itself up. **Photos → Cloudflare R2** (zero egress on image
+serving, S3-compatible). **Postgres provider deferred to connection time** —
+migrate provider-agnostic (standard SQL) so Neon or Render Postgres both fit.
+Build order: (1) Postgres migration behind the unchanged store contract —
+tenant-isolation/door-gate/audit:guest stay green as the proof; (2) photos →
+R2; (3) containerize (`output: standalone` + Dockerfile); (4) deploy + wire
+Postgres/R2/cron/DNS/Stripe webhook. Rejected: Vercel (usage-based cost, seat
+floor, same migration up front anyway).
