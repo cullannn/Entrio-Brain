@@ -126,6 +126,18 @@ R2; (3) containerize (`output: standalone` + Dockerfile); (4) deploy + wire
 Postgres/R2/cron/DNS/Stripe webhook. Rejected: Vercel (usage-based cost, seat
 floor, same migration up front anyway).
 
+### 2026-08-03 — The demo is a starter template, on in production
+New hosts get the demo in production too, but pared to a *template*: the two
+example properties (fully built — guidebooks, rules, neighbourhood, photos) and
+the extras configured against them. **No reservations** (so the dashboard shows
+the host's own numbers, not fictional revenue — the original reason demo was
+off in prod), **no guests** (they only exist for bookings), **no tasks** (the
+seeded ones name seeded guests, nonsense without the bookings). Supersedes the
+earlier "demo off in production" decision. `demoDataEnabled()` defaults on;
+`ENTRIO_DEMO_DATA=0` turns it off (tests use that). A guest link now only exists
+once a host makes a real booking, so the per-account seed-token derivation
+(`tokenFor`) is gone.
+
 ### 2026-08-03 — Step 1 done: the store is on Postgres
 The store queries Postgres scoped by account, retiring the in-memory
 seed+overlay world. **One table per entity: jsonb plus the columns anything

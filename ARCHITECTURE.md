@@ -51,8 +51,10 @@ JSON-file → SQLite → Postgres, each without app-code changes — the seam he
 - Sample data is per-account: each owner gets the seed rows stamped with their
   id, with portal tokens **derived** per account (SHA-256) so two hosts never
   share a guest link.
-- Demo data is **off in production** (`demoDataEnabled()`), on in development —
-  so production is purely a host's own rows.
+- The demo is a **starter template**, on in production too: two example
+  properties + their extras, materialised as real rows. No reservations/guests/
+  tasks — so a host's dashboard shows their own numbers, never fictional revenue.
+  `ENTRIO_DEMO_DATA=0` turns it off (tests use that).
 - Persistence: **Postgres** (`src/lib/db.ts`, pooled `pg`), one table per
   entity — `jsonb data` plus the columns anything queries by (`account_id`,
   `id`, `portal_token`, `external_id`). Patches are `data || $x::jsonb` (shallow
