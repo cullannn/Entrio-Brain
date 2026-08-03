@@ -1,6 +1,6 @@
 # Deployment architecture (decided)
 
-*Decided 2026-08-03. Status: **step 1 (Postgres) done; steps 2–4 pending.***
+*Decided 2026-08-03. Status: **steps 1–2 (Postgres, R2 photos) done; steps 3–4 (containerize, deploy) pending.***
 
 Goal: Entrio live on **entrio.ca**, scalable to 1000+ hosts, run **cheaply and
 predictably**. The cloud shape is settled; the local upgrades follow from it.
@@ -63,10 +63,19 @@ overlay-replay model **for real data** (keep seed-replay for the demo only).
 - This also dissolves most SCALING.md soft walls (indexed token lookup,
   SQL-side upsell counts) and lets throttle/sync locks move into the DB.
 
-### 2. Photos → R2 *(one file + config)*
-`api/photos/route.ts` writes to R2 via the S3 SDK; the returned `src` becomes
-the R2/CDN URL. Existing `/photos/*` seed assets can stay bundled or move to R2
-too.
+### 2. Photos → R2 *(DONE 2026-08-03)*
+A `storage()` provider (same shape as `payments()`/`billing()`): R2 when all
+five `R2_*` vars are set, the local `public/` folder otherwise. `api/photos`
+calls `storage().put()` and stores the src it returns; uploads are keyed per
+account (`uploads/<accountId>/<file>`). Seed assets stay bundled — only host
+uploads need durable storage, since the container wipes `public/` on redeploy.
+- **Not the S3 SDK.** `aws4fetch` (~2KB) signs; the PUT goes over **`node:https`**,
+  not `fetch` — R2 needs Content-Length and Next.js patches global fetch to send
+  byte bodies chunked with none (411 MissingContentLength). See INCIDENTS.
+- Verified against a live bucket: upload → 200 with an absolute `pub-….r2.dev`
+  URL → object publicly served, byte-identical, `immutable` cache header.
+- Serving needs no config: `Photo` is a plain `<img>`, so absolute URLs and the
+  existing `/photos/*` paths both just work.
 
 ### 3. Containerize for Render
 `output: "standalone"` in `next.config`, a `Dockerfile` (or Render's native

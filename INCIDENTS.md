@@ -132,3 +132,16 @@ had no error path — sold-out threw into a transition and froze the button at
 "Asking…". · Preview preferred real bookings, which silently removed the
 before/after toggle. · Verification email promised "no account will be
 created", which was false.
+
+### 2026-08-03 — R2 uploads 411'd inside Next, worked everywhere else
+The R2 PutObject returned `411 MissingContentLength` from the app, while the
+exact same code — Uint8Array body, Blob body, even a manual Content-Length
+header — returned 200 from a standalone node script. R2 rejects a PutObject
+with no Content-Length, and **Next.js patches global `fetch`** so a byte-buffer
+body goes out chunked with no length; none of the body forms fixed it because
+the mangling is in the transport, not the body.
+**Lesson:** when a network call behaves differently in the app than in a probe,
+suspect the runtime's patched globals before the payload. The fix keeps
+`aws4fetch` for the SigV4 signature but sends the PUT over `node:https`, which
+sets Content-Length and never touches Next's fetch. Also why the probe lied:
+reproduce inside the real runtime, not a clean one.

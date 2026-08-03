@@ -171,3 +171,18 @@ separate Future tab, so the opening screen stays one-line-per-property instead o
 a forward backlog. Then Past, then All. The nearest-per-property set is computed
 over the same rows the list is drawn from, so filtering to one property narrows
 it too.
+
+### 2026-08-03 — Step 2 done: host photos live on R2
+Uploads move to Cloudflare R2 behind a `storage()` provider shaped exactly like
+`payments()`/`billing()` — R2 when all five `R2_*` vars are set, the local
+`public/` folder otherwise, never a stack trace for a half-set-up deploy. Only
+**host uploads** go to R2; seed photos stay bundled static assets, because the
+container wipes `public/` on redeploy and that's the only durability gap. Objects
+are keyed **per account** (`uploads/<accountId>/<file>`) so one host's photos are
+listable and clearable on their own. **Not the AWS S3 SDK** — `aws4fetch` (~2KB)
+signs and `node:https` sends (megabytes of SDK for one PUT wasn't worth it, and
+the SDK's newer integrity checksums fight R2). R2 over S3 for zero egress: every
+guest opening a property page pulls images, and that traffic is free. Serving is
+free too — `Photo` is a plain `<img>`, so an absolute `pub-….r2.dev` URL and the
+old `/photos/*` paths both render unchanged. Verified against a live bucket end
+to end. Next: containerize (step 3), then deploy (step 4).
