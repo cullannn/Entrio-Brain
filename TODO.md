@@ -5,11 +5,11 @@ delete them.
 
 ## Deferred code findings (from the 2026-08-03 review)
 
-- [ ] **Stale-snapshot writes across `await`** (4 sites): a reservation is
-      read, a network call awaited, then the *pre-await* snapshot written
-      back — reverting anything a Stripe webhook wrote in the gap. Fix:
-      re-read immediately before each patch. (Identity session creation,
-      webhook handlers.) Narrow window, real.
+- [x] **Stale-snapshot writes across `await`** — fixed 2026-08-03. All the
+      reservation read-modify-write paths (upsells + verification) moved onto
+      `mutateReservation` (row-locked transaction), which reads the current
+      record under the lock instead of a pre-await snapshot. Covered by
+      `concurrency.test.ts`.
 - [ ] **Guests are never deleted** — `deleteReservation`/`deleteProperty`
       leave orphaned guest rows (name/email/phone) forever. Unbounded growth
       + a retention problem.

@@ -108,6 +108,21 @@ arrival day — the exact morning it sells.
 **Lesson:** measure "hours until" against the real instant (zoned check-in
 time), never day arithmetic; DST skew disappears with it.
 
+### 2026-08-03 — The async store let concurrent writes clobber each other
+A reservation's extras and verification record are lists inside its own JSON,
+so changing one item is a read-modify-write. Synchronous, that was one tick;
+on Postgres every step is a network hop, so two requests read the same base and
+the second write erased the first — two guests requesting different extras, or
+a Stripe webhook landing during a host override, and one silently vanished. The
+same shape was the deferred "stale-snapshot across await": identity writes
+spread the verification read *before* a Stripe round trip.
+**Lesson:** read-modify-write of a row's own nested list must hold a row lock.
+`mutateReservation` wraps `SELECT … FOR UPDATE` + merge in one transaction; every
+upsell/verification write moved onto it. Cross-row invariants (inventory across
+different reservations) a row lock can't cover — left open on purpose, because a
+request is an ask and only one is ever approved. Test: `concurrency.test.ts`
+reproduces the clobber and proves the lock fixes it.
+
 ### 2026-08-03 — Assorted, one line each
 `writeFileSync` truncate-in-place + silent corrupt-file recovery = full data
 loss path (atomic rename + loud failure now; then SQLite). · Guidebook
