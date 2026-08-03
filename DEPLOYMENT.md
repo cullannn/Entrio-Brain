@@ -105,3 +105,52 @@ logs; webhook `event.id` dedupe.
 Usage-based and small, scaling with use not host count: Stripe (% per txn),
 Google Places (~$0.028 per "Recommend" click — verify current free-credit
 terms), Anthropic Haiku (pennies/draft). Under ~$100/mo well past 100 hosts.
+
+## AWS later? Portability, reliability, and the exit path
+
+*Discussed 2026-08-03. Not a decision to move — a note on why the door stays open.*
+
+**Is AWS more reliable at scale?** Higher *ceiling*, not automatically a higher
+*floor*. Render, Neon and R2 are all production-grade (R2 11-nines durability;
+Neon separated storage/compute with automated failover + backups; Render runs
+on AWS/GCP underneath) and comfortably deliver ~99.9%+ at hundreds-to-low-
+thousands of hosts. AWS's edge is *extreme* HA — active-active multi-region,
+sub-minute failover, five-nines, strict data-residency/compliance — and only
+when you invest the ops to build and test it; a badly-run AWS deploy is *less*
+reliable than a well-run Render/Neon one. The stack also already spreads risk
+across three vendors (app/Render, data/Neon, photos/Cloudflare), so one
+provider's outage doesn't take everything. **Move to AWS for a concrete need
+(a contractual SLA, multi-region, compliance, or sustained large-scale traffic
+where reserved-instance discounts flip the cost math) — not merely "more
+hosts," which is a scaling knob Render/Neon handle well past the first
+thousand.**
+
+**Is the migration easy?** Yes, by design — it's config, not a rewrite:
+- **App**: a standard `next start` container → App Runner or ECS/Fargate. Same
+  image, near lift-and-shift.
+- **Postgres**: `pg_dump` Neon → `pg_restore` RDS/Aurora, change `DATABASE_URL`.
+  **Zero app-code changes** — the store is provider-agnostic standard SQL, no
+  Neon-specific features on purpose.
+- **Photos**: R2 is S3-compatible (already the S3 SDK). Sync the bucket, change
+  endpoint + credentials. Config, not code.
+- **Cron/email**: point EventBridge at `/api/calendars/sync`; Resend works
+  anywhere (or swap to SES).
+
+The real work is the AWS *scaffolding* (VPC, subnets, security groups, IAM,
+secrets, CloudFront, monitoring) — a few days of one-time setup, plus a DNS
+cutover. **This is exactly why container + provider-agnostic-SQL + S3-compatible
+storage were the right first move: live cheaply and simply now, AWS door wide
+open, no lock-in.** (Vercel-serverless would have made this move much harder —
+another reason it was rejected.)
+
+**To keep portability:** stay on standard, portable primitives — no Neon
+branching/HTTP-driver in app code, no hard dependence on Render-only features,
+nothing R2-specific beyond the S3 API.
+
+**Rough cost contrast** (US regions, low traffic, estimates): decided stack
+~$7–8/mo start → ~$30–45 at hundreds of hosts. AWS managed equivalent (App
+Runner + RDS + S3/CloudFront) ~$40–75/mo start — driven by RDS having no
+perpetual free tier (Neon does), S3 egress fees (R2 has none), and the NAT-
+gateway trap (~$32/mo for private RDS access). AWS bare-EC2 is ~$13–20/mo but
+trades the dollars for ops you'd do yourself. AWS wins on price only at large
+scale with committed-use discounts.
