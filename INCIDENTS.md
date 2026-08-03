@@ -97,9 +97,9 @@ object, losing the Stripe session id and failed/mismatch flags — downgrading
 "Failed, message them now" to "Awaiting", permanently orphaning the guest's
 retry.
 **Lesson:** patch semantics are top-level; spread nested objects explicitly.
-Same family: writing a pre-`await` snapshot back after a network call
-reverts anything a webhook wrote in between (four sites, still open — see
-TODO).
+Same family: writing a pre-`await` snapshot back after a network call reverts
+anything a webhook wrote in between — fixed later the same day via
+`mutateReservation` (see the concurrency entry below).
 
 ### 2026-08-03 — Hour-granular sale windows quantised to days
 Upsell availability compared midnight-to-midnight, so an offset of "-4
