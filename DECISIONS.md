@@ -235,3 +235,39 @@ The provider deferred "to connection time" at cloud-architecture time is settled
 bill, the lean pick at 10 hosts. Neon (serverless, branching for a throwaway staging
 DB) was the alternative, rejected only to avoid a second vendor now; the store is
 standard SQL, so switching later is a connection string, not a migration.
+
+### 2026-08-04 — The first production feedback round, and the shapes it set
+A day of the operator using the live product as a stranger would, folded back
+in one pass. The decisions that will outlive the diffs:
+**Onboarding is channel-first, then the trial.** A new host's first screen asks
+where their bookings live — nothing preselected, because the answer shapes
+everything downstream and a default isn't an answer — then explains the trial
+(Basic, free, no card) and names Plus before it's ever needed. Once per
+account, keyed on the account so it survives devices.
+**Unbuilt integrations are visible but locked.** Hostaway/Hospitable show as
+"Coming soon" rather than vanishing — a channel-manager host deciding whether
+Entrio fits needs to see the roadmap — and the lock is enforced in the server
+action, not just the card.
+**The plan gate is now visible at the point of temptation.** Trial/Basic can't
+*select* identity verification any more: the picker shows "Don't ask" checked
+— the truth of the door — locks the asking options with the plan named as the
+reason, and keeps the saved setting for the day the plan changes. The
+enforcement always existed; what changed is that the UI stopped offering a
+choice the plan couldn't honour.
+**Extras are one-time or repeatable.** A mid-stay clean on a three-week stay
+is wanted weekly; a late checkout can only happen once. Repeatable re-offers
+when the last ask settles (paid or declined) and never allows two open lines —
+that invariant is what keeps every upsellId-keyed mutation unambiguous, and
+the store patches only the open line so paid history is untouchable.
+**Preview's theme selector is a costume.** It rides a query parameter and
+never writes the property; committing to a theme stays the editor's job, so
+browsing six looks can't end with the wrong one live. Preview also opens
+in-tab now — its bar carries the way back.
+**Manual entry validates early and twice.** Property unchosen until chosen,
+submit greyed until the required fields exist, emails must look like emails,
+overlapping dates on one property are a refused double-booking (half-open, so
+same-day turnover stays legal) — each rule in the form for the human and in
+the action for the wire.
+**Dev conveniences are NODE_ENV-gated, never flag-gated.** OTP 000000 and the
+one-click payments stamp exist only under `next dev`; production builds can't
+reach them by any configuration.
