@@ -271,3 +271,17 @@ the action for the wire.
 **Dev conveniences are NODE_ENV-gated, never flag-gated.** OTP 000000 and the
 one-click payments stamp exist only under `next dev`; production builds can't
 reach them by any configuration.
+
+### 2026-08-04 — Plans got teeth: a property ceiling, and extras that wait for Stripe
+Basic (and the trial with it) includes up to 3 properties; Plus is unlimited.
+One domain function gates every path a property appears by — the add button
+(greyed at the ceiling, reason printed), duplicate, and listing sync — and
+our own plan switch refuses a downgrade while the portfolio doesn't fit. The
+one path that can't be intercepted (a change made in Stripe's own billing
+portal) freezes growth instead of shrinking anything: billing never deletes
+work. And priced extras are withheld from real guests until the host's
+connected account can take a charge — offer, request and checkout read one
+predicate — because an extra a guest can request but never settle is a broken
+promise wearing a price tag. Free extras pass, the host's own preview shows
+everything, and the Upsells screen says what's hidden with the connect button
+beside it.
