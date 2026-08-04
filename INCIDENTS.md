@@ -162,3 +162,20 @@ stores and every reader treats as absent), never `undefined` — now documented 
 (2) a bug found at one site of a mechanical class is a prompt to sweep for the
 rest, not fix the one; (3) writing a test that *documents* a bug (green, asserting
 current behaviour) is how a found-but-unfixed bug survives to be fixed on purpose.
+
+### 2026-08-03 — Checkout redirected to 0.0.0.0:PORT on the first live deploy
+The live smoke-test's very first subscription paid fine (the webhook recorded
+Plus), but Stripe sent the browser back to `https://0.0.0.0:10000/…` —
+unreachable. The checkout `success_url` was built from `currentOrigin()`, which
+read the **Host header**, and behind Render's proxy that header is the
+container's own bind address (`0.0.0.0:PORT`). The app had *already* decided
+"build URLs from config, never the Host header" for reset links — but that rule
+never reached the billing origin, and worse, the same `currentOrigin()` was
+**copy-pasted** into the guest upsell checkout, so a guest paying would have
+bounced the same way.
+**Lessons:** (1) a security/robustness rule adopted in one place (reset links)
+has to be applied everywhere it's relevant — a URL built from the Host header is
+the same mistake whether it's a reset link or a redirect; (2) copy-pasted
+helpers spread the bug — both origins now share one `requestOrigin()` (prefers
+`ENTRIO_SITE_URL`); (3) the first live deploy is where proxy/host assumptions
+finally get tested — smoke-test the real environment, not just the code.
