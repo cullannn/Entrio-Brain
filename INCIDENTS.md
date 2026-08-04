@@ -145,3 +145,20 @@ suspect the runtime's patched globals before the payload. The fix keeps
 `aws4fetch` for the SigV4 signature but sends the PUT over `node:https`, which
 sets Content-Length and never touches Next's fetch. Also why the probe lied:
 reproduce inside the real runtime, not a clean one.
+
+### 2026-08-03 — Clearing a jsonb field with `undefined` clears nothing (×5)
+A test-coverage pass caught it: `patchAccount(id, { resetTokenHash: undefined })`
+is a silent no-op. `JSON.stringify` drops undefined keys, so the `data || $x`
+merge receives `{}` and the old value survives. Five clear-sites relied on it and
+quietly kept stale state — worst: a spent password-reset link stayed live for its
+full hour (a forwarded email = account takeover). Also: a used email-verify code
+lingered, a landed plan downgrade advertised "switching to Basic on …" forever,
+and **"unlink listing" never cleared `externalRef`, so the next channel sync
+re-matched the property**. The coverage pass found three; a grep for the class
+found two more.
+**Lessons:** (1) to clear a jsonb field you must write `null` (which the merge
+stores and every reader treats as absent), never `undefined` — now documented on
+`patchAccount`/`patchProperty`, whose types accept null so a clear reads as one;
+(2) a bug found at one site of a mechanical class is a prompt to sweep for the
+rest, not fix the one; (3) writing a test that *documents* a bug (green, asserting
+current behaviour) is how a found-but-unfixed bug survives to be fixed on purpose.
