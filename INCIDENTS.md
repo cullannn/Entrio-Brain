@@ -179,3 +179,15 @@ the same mistake whether it's a reset link or a redirect; (2) copy-pasted
 helpers spread the bug — both origins now share one `requestOrigin()` (prefers
 `ENTRIO_SITE_URL`); (3) the first live deploy is where proxy/host assumptions
 finally get tested — smoke-test the real environment, not just the code.
+
+**And it took a second pass.** Fixing the two `currentOrigin()` helpers wasn't
+enough: the two routes Stripe returns *to* — the guest `/stay/…/paid` and the
+host `/billing/confirm` — each did a *second* redirect with
+`new URL(path, request.nextUrl.origin)`, which behind the proxy is `0.0.0.0`
+again. So the return_url was finally right but the guest was bounced anyway. The
+tell was the final URL being the portal (`#stay`), not `/paid`. **Extra lesson:**
+`request.nextUrl.origin`/`request.url` are the *same* untrusted-origin trap as
+the Host header, and a partial sweep (`currentOrigin`, `get("host")`) missed
+them. A scan test (`redirect-origin.test.ts`) now forbids building any redirect
+base from the request origin — this class had three instances before it was
+caged.
