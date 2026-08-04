@@ -285,3 +285,17 @@ predicate — because an extra a guest can request but never settle is a broken
 promise wearing a price tag. Free extras pass, the host's own preview shows
 everything, and the Upsells screen says what's hidden with the connect button
 beside it.
+
+### 2026-08-04 — The guest introduces themselves fully, and the house acknowledges it
+The intro screen asks every guest for whatever their booking arrived without —
+full name, email, phone, all required and live-validated — and shows what it
+already knows instead of asking again: nothing known is rewritable from a
+link (the claim fills blanks field by field, refuses the rest). When the
+introduction lands, a staged arrival sequence — prepared, personalized,
+perfected — plays before the portal reveals. The claim action deliberately
+does not revalidate: any revalidation refetches the route the moment the
+action returns, which killed the ceremony at half a second before the
+sequence was given ownership of its own refresh. Hosts edit guests behind an
+explicit Save now, not on blur. And Reservations gained a Calendar tab — two
+months per property, nights as continuous blocks, clashes in clay, every
+night a link that keeps the calendar underneath.
