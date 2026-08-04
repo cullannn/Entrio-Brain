@@ -200,3 +200,20 @@ on. Verified by booting the standalone server directly (Docker isn't installed
 locally) — health, pages, and static assets all serve. Only step 4 (create the
 Render service + managed Postgres, wire env/DNS/Stripe webhook/cron) is left, and
 it's dashboard work, not code.
+
+### 2026-08-03 — Error visibility is email-on-error, not Sentry (yet)
+Going live needs to be *told* when a flow throws — but Sentry is another vendor and
+a heavy dependency, against this codebase's grain and a solo operator's already-long
+list of dashboards. So: Next's `onRequestError` hook logs every uncaught server
+error (Render keeps the full stack) and emails a concise alert through the Resend
+already wired, gated on `ENTRIO_ALERT_EMAIL`. No dashboard, no aggregation, no new
+vendor or dep. Repeats of one signature are held 30 minutes so a broken flow can't
+flood the inbox, and the PII-carrying stack stays in the logs, out of the mail.
+Trade up to a real tracker when volume asks; the hook is the seam to do it at.
+
+### 2026-08-03 — Postgres provider: Render Postgres
+The provider deferred "to connection time" at cloud-architecture time is settled:
+**Render Postgres**, same platform as the app — private networking, one vendor, one
+bill, the lean pick at 10 hosts. Neon (serverless, branching for a throwaway staging
+DB) was the alternative, rejected only to avoid a second vendor now; the store is
+standard SQL, so switching later is a connection string, not a migration.

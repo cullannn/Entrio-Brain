@@ -13,7 +13,7 @@ predictably**. The cloud shape is settled; the local upgrades follow from it.
 | Host | **Render** | Managed Postgres + cron + disks + TLS in one dashboard, git-push deploys, least ops |
 | Sequencing | **Postgres first, then deploy** | First deploy is multi-instance-ready; no second migration; also drops Litestream entirely |
 | Photo storage | **Cloudflare R2** | Zero egress fees on image serving, S3-compatible (portable), 10 GB free |
-| Postgres provider | **Decide at connection time** | Migrate provider-agnostic (standard SQL); pick Neon vs Render Postgres when we wire the connection string |
+| Postgres provider | **Render Postgres** (locked 2026-08-03) | Same platform as the app — private networking, one vendor, one bill; the lean pick at 10 hosts. Neon (branching, serverless) rejected for now to avoid a second vendor. Still standard SQL, so a move to Neon later is only a connection string |
 
 Rejected: **Vercel/serverless** (usage-based cost, ~$20/mo/seat floor, forces
 the same migration up front) and **Phase-0-with-SQLite** (would mean a second
