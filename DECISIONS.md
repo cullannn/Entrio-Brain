@@ -299,3 +299,14 @@ sequence was given ownership of its own refresh. Hosts edit guests behind an
 explicit Save now, not on blur. And Reservations gained a Calendar tab — two
 months per property, nights as continuous blocks, clashes in clay, every
 night a link that keeps the calendar underneath.
+
+### 2026-08-04 — Perceived speed is a feature: skeletons and press states
+Every host page renders dynamically, so a nav tap used to do nothing until
+Postgres answered — a dead half-second that read as the app ignoring the
+touch. Convention now: one loading.tsx paints the destination's silhouette
+instantly for the whole host side (Settings shares it), and interactive
+chrome acknowledges the press itself (active: states — the house already
+preferred presses to hovers). Companion pattern for responsive tables: below
+lg a row is a composed card; at lg the wrappers dissolve with lg:contents and
+lg:order-* deals the same cells into the table's columns, so one markup
+serves both without a parallel mobile tree.
