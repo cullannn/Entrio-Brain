@@ -208,3 +208,21 @@ branches before diagnosing from a probe's status code; the misdiagnosis came
 from remembering only one of the two ways it 404s. (3) If self-hiding ever
 hurts operations, the fix is a separate authenticated health probe — not a
 chattier 404.
+
+### 2026-08-04 — A guest without an email couldn't pay
+First smoke test on the real domain: Pay → "Couldn't open the payment page."
+The checkout passed the guest's email straight through to Stripe. The SDK
+silently drops an `undefined` param, but a guest row saved with a *blank*
+email string sends `customer_email: ""` on the wire, which Stripe rejects
+before the session exists — and Next redacts thrown server-action messages in
+production, so the guest saw only the generic retry line for a state retrying
+can't fix. A host-created booking with the email field left empty is a
+completely normal booking.
+**Lessons:** (1) an "optional" field has two absent shapes — missing and
+empty — and an SDK that quietly handles one will happily ship the other;
+normalize at the provider boundary (`?.trim() || undefined`), where the
+external API's rule actually lives. (2) In production the real error only
+exists server-side (logs / the alert email); the client's friendly fallback
+is by design, so diagnosis has to start at the logs, not the message. (3)
+Checkout collects an email itself when none is supplied, so omission was
+always the correct behaviour, not a degraded one.
