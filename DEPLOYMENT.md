@@ -93,10 +93,14 @@ the DB rather than serving 500s.
 - Verified without Docker (not installed locally) by booting the standalone
   server directly: health 200, pages and static assets served.
 
-### 4. Deploy + connect
-Render web service → Postgres (provider picked here) → R2 bucket → Render Cron
-hitting `/api/calendars/sync` with `ENTRIO_CRON_SECRET` → GoDaddy DNS to Render
-→ auto TLS. Real Stripe webhook endpoint + signing secret (not the CLI's).
+### 4. Deploy + connect *(DONE 2026-08-03 — live on the temp URL; DNS cutover open)*
+Render web service → Postgres (Render Postgres, same region for private
+networking) → R2 bucket → Render Cron hitting `/api/calendars/sync` with
+`ENTRIO_CRON_SECRET` every 15 min → auto TLS. Stripe now requires **two**
+event destinations (platform + connected accounts), each with its own signing
+secret — comma-separated in one env var. DNS moved from GoDaddy to Cloudflare
+(needed for the R2 custom photos domain anyway); pointing entrio.ca at the
+service is the remaining step, then Stripe test→live.
 
 ### 5. Later (Phase 2, when a single instance strains)
 Scale to 2+ instances; staggered queued calendar jobs; Sentry + structured
@@ -108,7 +112,7 @@ logs; webhook `event.id` dedupe.
 - **Cloudflare** account → an R2 bucket + API token.
 - **Postgres**: a Neon project *or* a Render Postgres instance (decided at
   step 4). A connection string either way.
-- **GoDaddy**: point entrio.ca (currently a parked A record) at Render.
+- **Cloudflare DNS** (moved off GoDaddy): point entrio.ca at Render.
 - **Env vars in Render**: everything in INTEGRATIONS.md, plus `DATABASE_URL`,
   R2 credentials, and `ENTRIO_SITE_URL=https://entrio.ca`.
 - **Stripe**: a live webhook endpoint + its signing secret.

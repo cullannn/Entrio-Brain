@@ -211,6 +211,24 @@ vendor or dep. Repeats of one signature are held 30 minutes so a broken flow can
 flood the inbox, and the PII-carrying stack stays in the logs, out of the mail.
 Trade up to a real tracker when volume asks; the hook is the seam to do it at.
 
+### 2026-08-03 — Step 4 done: live on Render, every leg verified in production
+The full stack is up and smoke-tested on the service's temporary URL: Docker
+web service + managed Postgres in one region (private networking), R2 serving
+through its custom photos domain, Resend sending from the real domain, the
+calendar cron every 15 minutes (five-minute polling was declined — iCal feeds
+don't move that fast and it triples the load for nothing), error-alert email
+armed. Stripe's current dashboard forces **two event destinations** — platform
+events and connected-account events, each with its own signing secret — so the
+webhook route now accepts a comma-separated `STRIPE_WEBHOOK_SECRET` and tries
+each until one verifies. Production smoke test passed every leg: register+OTP,
+subscription checkout, Connect onboarding, guest upsell request→approve→pay,
+identity verification, R2 upload, both webhook destinations delivering — after
+the 0.0.0.0-redirect incident below was fixed live. **CI stays parked on
+manual dispatch** until cutover, to spend zero Actions quota during the
+pre-production churn; re-enabling the triggers and gating Render deploys on CI
+is part of going production-ready. Remaining: point entrio.ca at the service,
+then Stripe test→live.
+
 ### 2026-08-03 — Postgres provider: Render Postgres
 The provider deferred "to connection time" at cloud-architecture time is settled:
 **Render Postgres**, same platform as the app — private networking, one vendor, one

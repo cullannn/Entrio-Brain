@@ -191,3 +191,20 @@ the Host header, and a partial sweep (`currentOrigin`, `get("host")`) missed
 them. A scan test (`redirect-origin.test.ts`) now forbids building any redirect
 base from the request origin — this class had three instances before it was
 caged.
+
+### 2026-08-03 — The endpoint that hides on purpose, diagnosed as broken
+The calendar-sync endpoint answers **404 to any request without the right
+bearer** — deliberately, and identically for "secret not configured" and
+"wrong token", so it never advertises that it exists. Standing up the new
+cron, an unauthenticated probe curl got 404 and that was read as
+"misconfigured", sending the operator off to re-verify env vars that were
+already correct (with a wrong method-mismatch theory offered along the way —
+the route handles both GET and POST). The first *authorized* run returned 200;
+nothing had ever been broken.
+**Lessons:** (1) an endpoint designed to hide cannot be probed from outside —
+404 *is* its healthy state; the only meaningful check is through the
+authorized path (here, the cron's own trigger). (2) Read the route's failure
+branches before diagnosing from a probe's status code; the misdiagnosis came
+from remembering only one of the two ways it 404s. (3) If self-hiding ever
+hurts operations, the fix is a separate authenticated health probe — not a
+chattier 404.

@@ -37,17 +37,29 @@ delete them.
 - [ ] **Stage 3**: photos → object storage + CDN; queued calendar jobs;
       Sentry + structured logs.
 
-## Deploy checklist (before entrio.ca goes live)
+## Deploy checklist (updated 2026-08-03 — app is live on Render's temp URL)
 
-- [ ] `ENTRIO_SITE_URL` → https://entrio.ca (still localhost; reset/verify
-      links break otherwise).
-- [ ] entrio.ca A record still parked — point it at the deployment.
-- [ ] Confirm `ENTRIO_DEMO_DATA` is off (defaults off when
-      `NODE_ENV=production`, but verify).
-- [ ] `ENTRIO_CRON_SECRET` set + a scheduler hitting `/api/calendars/sync`.
-- [ ] Real Stripe webhook endpoint + signing secret (not the CLI's).
-- [ ] Persistent disk or object storage for `public/photos/uploads`.
-- [ ] Backups running (Stage 1) before the first real host.
+- [x] `ENTRIO_SITE_URL` set (temporary Render URL) — flip to
+      https://entrio.ca at DNS cutover, below.
+- [ ] **entrio.ca DNS cutover** (in progress; DNS now lives on Cloudflare,
+      moved off GoDaddy): custom domain on the Render service, records in
+      Cloudflare, then `ENTRIO_SITE_URL` + both Stripe webhook URLs →
+      entrio.ca.
+- [x] Demo data: superseded — the demo is deliberately ON in production as a
+      starter template (DECISIONS 2026-08-03); confirmed on the live
+      dashboard.
+- [x] `ENTRIO_CRON_SECRET` set + Render cron hitting `/api/calendars/sync`
+      every 15 min — first run 200.
+- [x] Real Stripe webhook endpoints + signing secrets — **two** event
+      destinations (platform + connected), comma-separated secrets. Test
+      mode; live-mode versions at the Stripe cutover.
+- [ ] **Stripe test → live** (after DNS cutover): live keys, live webhook
+      destinations, live Connect/Identity KYC.
+- [x] Uploads on R2 with per-account keys, served via the photos domain.
+- [x] Backups: Render Postgres manages them.
+- [ ] Re-enable CI triggers + set Render to deploy only after CI passes
+      (deliberately parked to save Actions quota — DECISIONS 2026-08-03).
+- [ ] Uptime monitor on `/api/health`.
 
 ## Product backlog / not built
 
