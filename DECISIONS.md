@@ -413,3 +413,16 @@ fields render recessed and readOnly with a "from your booking" tag — visible
 because hiding them read as ignorance, locked because a forwarded link must
 never rename someone else's stay (readOnly over disabled: screen-readable,
 copyable, out of the tab order).
+
+### 2026-08-05 — The host's inbox mirrors the guest's milestones
+Every pre-arrival milestone now mails the host: extra requested (already),
+extra paid, guest introduced themselves, identity check passed (with the
+name-match verdict). Patterns that made it safe: (1) payment mail lives in
+the single settle point both the return trip and the webhook pass through,
+behind the existing idempotency guard — one mail per payment however many
+arrivals; (2) where two paths race to flip a milestone (guest return vs
+webhook on identity), the transition is detected *inside* the locked mutate
+via a closure flag, so only the first flipper mails; (3) the simulator path
+mails too — a moment that mails in production must mail on a laptop, or the
+flow can't be rehearsed; (4) a shared host-notify module owns the wording,
+callers own the "did it just happen" decision. Sends never fatal.
