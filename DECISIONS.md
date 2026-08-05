@@ -374,3 +374,29 @@ control stays compact while phones keep their picker wheel and desktops
 keep type-ahead, no custom dropdown to maintain. Validation judges the
 number together with its code once one is chosen, and alone before, so a
 fine number isn't flagged while the code is still unpicked.
+
+### 2026-08-05 — Manual dates move; synced dates say where they live
+A manually recorded stay's dates are editable from its pane, with the same
+ordering and overlap rules as creating one (the stay excluded from its own
+clash check) — everything attached to the stay survives, which is the point:
+the old delete-and-recreate workaround rotated the portal token and killed
+the link already sent to the guest. Synced stays are not editable here and
+say so: the channel's feed patches their dates on every sync, so a local
+edit would be silently stomped within the hour. The manual/synced split is
+enforced server-side off the reservation's source, never trusted from the
+pane. Source-absent is treated as manual — the safe reading for every row
+that predates the field.
+
+### 2026-08-05 — The extras conversation goes by mail, and addresses are proved
+Upsell requests email the host (with a link to the stay pane) and the host's
+approve/decline emails the guest when an address is on file, linking to the
+portal where Pay lives — sends are never fatal, the decision stands
+regardless, and the request-side send only fires when a line was actually
+appended (the dedup answers a double-tap with ok, which must not mean two
+emails). A guest-typed email is now proved before it lands: six-digit code
+to the inbox, typed back — the sign-up-code lifecycle reused verbatim
+(hashed, expiring, attempt-counted, spent on use) plus one extra pin: the
+code only confirms the exact address it was minted for. Guests whose address
+arrived with the booking never see the step. Test technique worth keeping:
+with no mail key the send goes to the console, so tests capture console.log
+and read the code out of the mail exactly the way a developer does.
