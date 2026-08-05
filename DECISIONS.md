@@ -400,3 +400,16 @@ code only confirms the exact address it was minted for. Guests whose address
 arrived with the booking never see the step. Test technique worth keeping:
 with no mail key the send goes to the console, so tests capture console.log
 and read the code out of the mail exactly the way a developer does.
+
+### 2026-08-05 — The intro polishes its edges; the mail wears the seal
+Three refinements in one pass. The OTP input auto-submits on its sixth digit
+and carries the full autofill recipe (one-time-code autocomplete + numeric
+pattern + name) so phone keyboards offer the code from the inbox. The email
+template now opens with the seal-beside-ENTRIO lockup and closes with the
+stacked sign-off — the seal drawn as nested border-radius circles, which
+degrade to a bordered square in Outlook's Word engine and still read as a
+mark. And the intro form shows what the booking already knows: host-supplied
+fields render recessed and readOnly with a "from your booking" tag — visible
+because hiding them read as ignorance, locked because a forwarded link must
+never rename someone else's stay (readOnly over disabled: screen-readable,
+copyable, out of the tab order).
