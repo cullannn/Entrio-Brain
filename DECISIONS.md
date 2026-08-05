@@ -457,3 +457,20 @@ Table lessons: per-row grids with an auto column misalign the moment rows'
 controls differ (fix: fixed-width control column); mobile and desktop row
 shapes are spelt out separately rather than contorted from one markup;
 cards gapped in the hand, zebra rows at the desk.
+
+### 2026-08-05 — Eight personas rewrote the homepage's rules
+A persona-panel review (portfolio/PMS, single-condo novice, boutique
+hospitality-lover, guest-experience skeptic, ESL reader, retired teacher,
+literature stylist, 30-second skimmer) converged on principles now applied:
+lead with the mechanism, not the outcome (the H1 must say what the thing
+IS); answer "how do bookings get in" and "does my lockbox work" above the
+fold; do the payback math on the page ("one late checkout covers Entrio");
+claim outcomes the demos only demonstrate (no 11pm code-texting; expired
+codes lock out past guests); never borrow another industry's idiom ("no
+seats" meant furniture to most). The heading rule that survived all eight:
+an inversion may keep its comma only if the noun stays ("Closed after
+checkout" passes; "Entry, timed" failed — "the bodies rescue the headings,
+and a heading shouldn't need rescuing"). Register map: literary voice is
+licensed inside the guest phone screens and hero; pricing, plans and
+mechanics must be plain. Guest-visible idioms must survive literal
+translation ("the walls are honest" did not).
