@@ -335,3 +335,42 @@ state from inside a React updater (dev double-invocation eats or doubles
 steps), and never pointer-capture a gesture that starts on a child control —
 capture retargets the eventual click to the captor and the control goes dead
 under a real mouse while synthetic tests pass.
+
+### 2026-08-04 — The brand mark is a component, not an asset
+The identity settled on the seal: the display-face E inside a double ring,
+drawn as a React component entirely from the app's design tokens — border,
+ink, and font, no image file — so it inherits any guest theme including the
+dark ones for free. Favicon and apple icon are generated at build/request
+time with next/og from the same vocabulary (satori needs a bundled TTF, not
+woff2; the static favicon.ico is gone). The wordmark is now a lockup, seal
+beside the name with the type a deliberate notch smaller than the emblem,
+and every surface — homepage, host pages, guest portal — closes with the
+same small stacked seal-over-name sign-off in place of a "powered by" line.
+One mark, one component, themed everywhere; a new surface signs itself by
+importing it, never by redrawing it.
+
+### 2026-08-04 — The host calendar keeps hotel time
+The multi-week availability strip adopted the hotel convention: a stay bar
+runs from the middle of its check-in day to the middle of its checkout day
+(±50%-of-a-cell margins on the grid spans), so a turnover day shows the
+departing and arriving stays sharing one square instead of an ambiguous
+full-day collision. Date cells carry a weekday initial above the number.
+Lesson: when bars vacate half a cell the track behind them shows, so the
+grid track itself must be painted the surface colour, not left to the page
+background. The feeds panel also gained a prominent button to the channel's
+own calendar page (the stable calendar-router path, which survives login
+redirects) — hosts kept hunting for where their iCal address lives.
+
+### 2026-08-04 — The arrival ceremony ends on the mark, and phones arrive with their code
+The guest-intro ceremony no longer exhales to a blank: the staged welcome
+lines crossfade into the centered seal and name, which hold a beat and then
+fade before the router refresh reveals the portal — brand as the last beat
+of the handoff, with the whole sequence collapsing to about a second under
+reduced motion. The phone question split into a country-code picker plus a
+national number, stored composed as +code number so a host's phone dials it
+from any country. UI pattern worth keeping: a styled facade showing just
+"+44" with an invisible native select stretched over it — the closed
+control stays compact while phones keep their picker wheel and desktops
+keep type-ahead, no custom dropdown to maintain. Validation judges the
+number together with its code once one is chosen, and alone before, so a
+fine number isn't flagged while the code is still unpicked.
