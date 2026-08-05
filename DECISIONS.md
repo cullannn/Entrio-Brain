@@ -426,3 +426,23 @@ via a closure flag, so only the first flipper mails; (3) the simulator path
 mails too — a moment that mails in production must mail on a laptop, or the
 flow can't be rehearsed; (4) a shared host-notify module owns the wording,
 callers own the "did it just happen" decision. Sends never fatal.
+
+### 2026-08-05 — Turnovers: an opt-in schedule where cleaners are links, not logins
+A Settings switch adds a Turnovers tab (below Properties) with two inner
+tabs: the schedule — every confirmed checkout as a filtered table in the
+Reservations manners — and a cleaner roster. Decisions that shaped it:
+cleaners never sign in; their whole interface is an invite email and a
+tokened accept/decline page (the guest-link credential pattern reused). The
+calendar sync is plain iTIP: a hand-built ICS (METHOD:REQUEST, stable UID
+per job, counted SEQUENCE, UTC times converted from the property's zone)
+attached to both the cleaner's invite and the host's copy — Google/Apple
+treat re-issues as updates. Acceptance re-issues the event with the
+attendee ACCEPTED and a bumped sequence so the host's calendar confirms in
+place. The clean window is checkout→next check-in on same-day turnovers
+(labelled a hard deadline) or checkout+4h otherwise. Answers may change;
+each change mails the host exactly once (decided under the row lock). No
+re-assign shortcut — withdraw (which tells the cleaner) then invite.
+State lives on the reservation (`cleaning`), the roster in its own table;
+the answer token gets an expression index on the jsonb. Lesson: moving a
+route directory mid-session poisons Turbopack's chunk graph ("CJS module
+can't be async" against the old path) — restart dev after renames.
