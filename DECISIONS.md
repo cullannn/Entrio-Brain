@@ -310,3 +310,16 @@ preferred presses to hovers). Companion pattern for responsive tables: below
 lg a row is a composed card; at lg the wrappers dissolve with lg:contents and
 lg:order-* deals the same cells into the table's columns, so one markup
 serves both without a parallel mobile tree.
+
+### 2026-08-04 — The homepage shows the product instead of describing it
+Rebuilt photography-led in the house language: light editorial hero, an
+original generated Toronto interior (generated on the operator's own account
+precisely so no stock or other host's listing is ever marketed with), and a
+faithful reproduction of the guest's real Stay screen as the centrepiece —
+entry-code card, essentials grid, tab rail. Iterated from three rejected
+directions: generic-SaaS mocks failed ("looks too simple"), fluffy copy
+failed ("only the most important information"), invented mock screens failed
+("show what a guest would actually truly see"). The rules that survived:
+copy is one idea per section; every number renders from PLANS/TRIAL_DAYS so
+the page can't disagree with billing; the mock mirrors the live portal and
+must be updated when the portal changes.
