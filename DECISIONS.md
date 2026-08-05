@@ -323,3 +323,15 @@ failed ("only the most important information"), invented mock screens failed
 copy is one idea per section; every number renders from PLANS/TRIAL_DAYS so
 the page can't disagree with billing; the mock mirrors the live portal and
 must be updated when the portal changes.
+
+### 2026-08-04 — The homepage's centrepiece is the portal itself, rotating
+The guest-screen mock became a deck of the four real tabs, rendered from the
+portal's own markup at true phone scale and scaled to fit — scrollable,
+because the real screens are, with Stay's entry-code card ticking a live
+countdown and Arrival showing the released code. Fidelity rule hardened into
+convention: the mock IS the portal's markup, and a portal redesign must be
+mirrored there. Interaction lessons paid for in debugging: never commit
+state from inside a React updater (dev double-invocation eats or doubles
+steps), and never pointer-capture a gesture that starts on a child control —
+capture retargets the eventual click to the captor and the control goes dead
+under a real mouse while synthetic tests pass.
