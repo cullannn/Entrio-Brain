@@ -226,3 +226,26 @@ exists server-side (logs / the alert email); the client's friendly fallback
 is by design, so diagnosis has to start at the logs, not the message. (3)
 Checkout collects an email itself when none is supplied, so omission was
 always the correct behaviour, not a degraded one.
+
+### 2026-08-04 — The homepage deck ignored thumbs and outdrew the header
+Three mobile-only faults shipped in the homepage showcase, all invisible on
+a desktop. (1) The page panned sideways: the deck's fanned side screens are
+translated far past the column on purpose, and past the viewport edge that
+bleed becomes a horizontal scroll area. Root fix: `overflow-x: clip` on the
+page root — clip, not hidden, because hidden makes a scroll container and
+quietly changes sticky/scroll behaviour, while clip only forbids the axis.
+(2) Swiping the deck did nothing on a real phone even though the stage
+declared `touch-action: pan-y`: the browser resolves touch-action by walking
+up from the touched element only as far as the *nearest scroll container*,
+and the mock's own scrollable screen is one — so a finger on the screen
+never saw the stage's declaration, the browser claimed the gesture, and the
+drag was pointercancelled. Any scrollable child inside a custom-gesture
+surface must carry the touch-action itself. (3) The mocks drew over the
+sticky site header: the fan layers itself with z-indexes in the hundreds,
+and without `isolation: isolate` on the deck root those values compete in
+the page's stacking context and beat the header's modest z-50. Decorative
+z-index ladders stay private behind an isolated ancestor.
+**Lesson:** every one of these passes with a mouse on a wide window;
+touch-action, viewport-edge bleed, and stacking-context leaks only show up
+on the phone itself. The 414px check has to include *touching*, not just
+looking.
