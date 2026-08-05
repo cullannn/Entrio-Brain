@@ -446,3 +446,14 @@ State lives on the reservation (`cleaning`), the roster in its own table;
 the answer token gets an expression index on the jsonb. Lesson: moving a
 route directory mid-session poisons Turbopack's chunk graph ("CJS module
 can't be async" against the old path) — restart dev after renames.
+
+### 2026-08-05 — The calendar's Yes flows in, and the table settled
+Inbound RSVP: with ENTRIO_RSVP_INBOUND set, cleaning invites carry an
+Entrio-owned organizer address plus-addressed with the job token; Google's
+iTIP REPLY lands on a svix-verified Resend inbound webhook that reads
+PARTSTAT (or the Accepted:/Declined: subject) and drives the same tokened
+answer path — locks, dedupe, host mail. Unset, the host stays organizer.
+Table lessons: per-row grids with an auto column misalign the moment rows'
+controls differ (fix: fixed-width control column); mobile and desktop row
+shapes are spelt out separately rather than contorted from one markup;
+cards gapped in the hand, zebra rows at the desk.
