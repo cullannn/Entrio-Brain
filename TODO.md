@@ -99,3 +99,10 @@ delete them.
   logged). Deferred because select-all is clumsy on phones and the paste
   ceremony undercuts the "super easy" promise. If revived: desktop-badged
   step, accept partial pastes, attempt URL fetch first with paste fallback.
+  Researched further same day: managed scraper actors (Apify) take a single
+  listing URL and return structured JSON (description, amenities, rules,
+  times, photo URLs) for ~$2/1000 — the vendor absorbs Airbnb's markup
+  churn, making URL-first viable with paste as fallback; open-source
+  pyairbnb (active, internal-API-based, Python) is the free option where we
+  own the breakage. ~1¢ scrape + ~5-9¢ drafting per onboarding. Still
+  deferred by choice, not feasibility.
