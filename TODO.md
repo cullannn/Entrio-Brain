@@ -92,3 +92,10 @@ delete them.
 - Hostaway as a first-class pickable channel once API access lands; the
   interim advice (paste per-listing .ics) now at least appears on the
   locked card.
+- Airbnb listing import (considered 2026-08-06, deferred): no public API and
+  bot-protected pages make URL-scraping fragile and ToS-hostile; the honest
+  version is paste-your-listing + AI drafting into the editor fields with a
+  found/not-found receipt (~5-9¢ per attempt on Sonnet, capped input, usage
+  logged). Deferred because select-all is clumsy on phones and the paste
+  ceremony undercuts the "super easy" promise. If revived: desktop-badged
+  step, accept partial pastes, attempt URL fetch first with paste fallback.
