@@ -285,3 +285,22 @@ bar became a floating pill over a continuous field) instead of faking
 reach that isn't there. Pull-to-refresh refetches data, never new client
 code — a "still broken" report after a deploy may just be the old bundle;
 have the phone fully relaunch the app before judging.
+
+## 2026-08-06 — Five fixes into a corpse
+
+The live preview kept "losing its top" after autosaves, and five
+successive scroll fixes (anchor stripping, scrollTo resets, restoration
+disarming) each failed to take. The villain was environmental: a corrupted
+Turbopack dev cache had broken the stay page's chunk ("CJS module can't be
+async"), so the iframe rendered without working JavaScript — every fix
+shipped into a page that couldn't run it. Production builds were clean the
+entire time. Clearing .next and restarting the dev server revived
+hydration; two genuine bugs remained (a scrollIntoView block:"start"
+ramming revealed rows to the top, and scroll anchoring drifting ~one bar
+height post-hydration) and fell in one pass once measurements were real.
+**Lesson:** when consecutive fixes don't take, stop shipping and read the
+browser console — a dead-hydration page swallows fixes indefinitely, and
+"my change did nothing" is itself diagnostic data pointing at the
+environment. Verify with live measurements (scrollY, element rects), not
+another screenshot round-trip. And check whether prod even shares the
+symptom before treating a dev-only ghost as a product bug.
