@@ -76,3 +76,19 @@ delete them.
 
 - [ ] Keep this brain updated every session that changes architecture,
       scope, or key behaviour (protocol in README).
+
+## From the 2026-08-06 eight-persona walkthrough (deferred, not forgotten)
+- Unsaved-changes guard in the property editor: leaving the page silently
+  drops half-typed edits; App Router has no clean client-nav interception,
+  so this needs a considered design (dirty tracker + beforeunload at least).
+- Currency choice for manual bookings — CAD is hardcoded today.
+- More than one photograph per property (the luxury-host ask).
+- Team access: a second login per account for co-hosts/managers.
+- Trial access to identity checks: registration says "decide afterwards"
+  but the flagship Plus feature can't be tried. Business call — each check
+  has a real per-use cost.
+- Exports for property managers: CSV of bookings/extras revenue, outbound
+  iCal of Entrio's own calendar.
+- Hostaway as a first-class pickable channel once API access lands; the
+  interim advice (paste per-listing .ics) now at least appears on the
+  locked card.

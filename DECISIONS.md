@@ -474,3 +474,18 @@ and a heading shouldn't need rescuing"). Register map: literary voice is
 licensed inside the guest phone screens and hero; pricing, plans and
 mechanics must be plain. Guest-visible idioms must survive literal
 translation ("the walls are honest" did not).
+
+## 2026-08-06 — Eight personas walked the app; the app answered
+Ran an eight-persona end-to-end walkthrough (first-timer, engineer,
+property manager, retiree, luxury, side-hustle, ESL, sceptical veteran) as
+parallel agents reading the real screens. Convergent findings got fixed the
+same day: the sample portfolio no longer hides the "add your own property"
+door or eats the plan ceiling; the turnover feature carries one name
+(Turnovers) and its empty state deep-links to the right Settings tab; the
+guest-link card explains the Airbnb-thread handoff instead of showing two
+dead buttons; payment setup copy stops assuming a Stripe account and the
+platform fee is disclosed before connecting; nav words now match page copy
+(Extras, Bookings); the identity email no longer says "passed" on a name
+mismatch; idioms trimmed for ESL readers; arrival ceremony halved.
+Lesson: seed data changes which empty-states are reachable — design the
+first morning WITH the sample present, not the zero state.
