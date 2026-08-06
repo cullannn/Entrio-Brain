@@ -249,3 +249,39 @@ z-index ladders stay private behind an isolated ancestor.
 touch-action, viewport-edge bleed, and stacking-context leaks only show up
 on the phone itself. The 414px check has to include *touching*, not just
 looking.
+
+## 2026-08-05 — The tab bar that could not reach the glass
+
+The host app's bottom tab bar floated above the bottom of the screen on a
+home-screen (standalone) install, with a dead band below it, and survived
+four "fixes" aimed at CSS. Ground truth, obtained by shipping a one-deploy
+diagnostic readout into the bar itself: the OS sized the standalone window
+as screen-height *minus the status-bar inset* but anchored it at the top of
+the glass — so a band at the bottom equal to the *top* inset sits outside
+the webview and no CSS can ever paint or occupy it. Meanwhile
+`env(safe-area-inset-bottom)` still reported the full hardware inset even
+though the home indicator lay outside the window, so honest-looking
+safe-area padding double-spaced the bar.
+
+Along the way, three transferable fixes:
+- Never trigger work from inside a setState updater. The pull-to-refresh
+  release called startTransition inside a `setPull` updater; React may
+  replay or drop updater work, which showed as a refresh veil over a
+  refresh that never began. Decide in the event handler, read gesture
+  state from a ref.
+- Any full-screen "busy" overlay needs a bail-out timer. A wedged RSC
+  refetch (dead spot, server mid-deploy) left the page blurred forever;
+  the veil now dismisses itself after eight seconds regardless.
+- Safe-area clearance is arithmetic, not faith: needed padding =
+  env inset − (screen.height − window.innerHeight), re-measured on resize
+  because a standalone launch settles its window size after first render.
+
+**Lesson:** when a layout bug survives two correct-looking CSS fixes, stop
+inferring from screenshots and make the device print its numbers —
+viewport heights, env insets, the vh units, standalone flags. One readout
+ended a five-round guessing loop. And when the platform genuinely
+withholds screen from the page, change the design to own the gap (the tab
+bar became a floating pill over a continuous field) instead of faking
+reach that isn't there. Pull-to-refresh refetches data, never new client
+code — a "still broken" report after a deploy may just be the old bundle;
+have the phone fully relaunch the app before judging.
