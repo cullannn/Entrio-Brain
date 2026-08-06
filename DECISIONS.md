@@ -489,3 +489,21 @@ platform fee is disclosed before connecting; nav words now match page copy
 mismatch; idioms trimmed for ESL readers; arrival ceremony halved.
 Lesson: seed data changes which empty-states are reachable — design the
 first morning WITH the sample present, not the zero state.
+
+## 2026-08-06 — Onboarding became a product surface, audited like one
+Built the guided onboarding stack: a "Getting set up" checklist on the
+Overview whose ticks DERIVE from the same propertyGaps logic that writes
+the property page's red line (stored progress can lie; derived progress
+can't), a ten-step live tour that narrates real pages (the sample
+property's tabs, Extras, Payments, Turnovers) with its stop index in the
+URL so the card survives cross-page walks, and a long-form guide artifact.
+Then ran the persona panel against the finished guide asking one question
+— is "checklist done" the same as "live"? — and it wasn't, three ways:
+payments lived outside the required path while priced extras silently
+hide from guests; nothing made the host ever SEE their own guest page;
+and the first-booking moment (import-on-open, "Awaiting guest", no
+new-booking email) was unexplained. All three became steps or card copy.
+Lessons: audit the guide with the same rigor as the product; tick
+completion by witnessing (the Guest-view step marks done only when the
+preview actually renders); and any step teaching a button must quote the
+button's real label.
