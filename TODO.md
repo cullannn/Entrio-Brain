@@ -78,9 +78,9 @@ delete them.
       scope, or key behaviour (protocol in README).
 
 ## From the 2026-08-06 eight-persona walkthrough (deferred, not forgotten)
-- Unsaved-changes guard in the property editor: leaving the page silently
-  drops half-typed edits; App Router has no clean client-nav interception,
-  so this needs a considered design (dirty tracker + beforeunload at least).
+- ~~Unsaved-changes guard in the property editor~~ — solved the better way
+  same day: sections autosave (debounced, serialized, flushed on
+  navigation/tab-hide, retry on failure). No unsaved state left to guard.
 - Currency choice for manual bookings — CAD is hardcoded today.
 - More than one photograph per property (the luxury-host ask).
 - Team access: a second login per account for co-hosts/managers.
