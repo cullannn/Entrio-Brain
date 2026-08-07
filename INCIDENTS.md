@@ -304,3 +304,20 @@ browser console — a dead-hydration page swallows fixes indefinitely, and
 environment. Verify with live measurements (scrollY, element rects), not
 another screenshot round-trip. And check whether prod even shares the
 symptom before treating a dev-only ghost as a product bug.
+
+## 2026-08-07 — The picker that threw the photograph away
+
+Section photo uploads did nothing from the file picker, while dragging the
+identical JPG into the same box worked. Cause: `input.onChange` read
+`e.target.files` into a variable, then set `e.target.value = ""` (the usual
+trick so re-picking the same file still fires a change) — but `files` is a
+**live FileList owned by the input**, and clearing the value empties it.
+The array we then iterated was empty. Drag-and-drop reads
+`e.dataTransfer.files`, its own list, which is exactly why it kept working
+and hid the bug. Fix: `Array.from(e.target.files ?? [])` BEFORE the reset.
+A sibling uploader that grabbed `files?.[0]` into a File first was
+unaffected — a File reference survives the reset; the list does not.
+**Lesson:** treat FileList (and any live DOM collection) as a view, not a
+snapshot, and copy before mutating its owner. When two paths into the same
+function disagree, the difference is in what each path *passes*, not in the
+function.
