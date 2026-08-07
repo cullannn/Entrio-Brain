@@ -106,3 +106,14 @@ delete them.
   pyairbnb (active, internal-API-based, Python) is the free option where we
   own the breakage. ~1¢ scrape + ~5-9¢ drafting per onboarding. Still
   deferred by choice, not feasibility.
+
+## Competitive gaps (Touch Stay review, 2026-08-07)
+- Multiple languages for guest-written content — wanted, deferred by the
+  host to "later on". Note it's translation of prose, not UI strings.
+- AI-drafted guidebook sections (same pattern as the Nearby drafter):
+  host types a few notes, Entrio drafts "Inside the flat" to rewrite.
+- Deliberately refused, and should stay refused: AI chat agent and a
+  message hub. Entrio's promise is that nothing reaches a guest except the
+  link the host paste themselves; a bot answering in the host's voice
+  breaks the one thing sceptical hosts trust it for.
+- Rejected outright: QR codes (manual work in the flat), logo upload.
