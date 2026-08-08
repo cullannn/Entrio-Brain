@@ -535,3 +535,28 @@ what happens and read better), and headline proof numbers, which we have
 no honest equivalent of until real hosts are using it. Fabricated social
 proof is off the table; the open question is whether "built and run on a
 real rental" earns its place instead.
+
+## 2026-08-08 — The landing page shows the host's half, in real screenshots
+
+The page proved the guest's experience with faithful reproductions of the
+guest screens and asked hosts to take *their* half on faith. The editor —
+the thing a host actually spends an evening in, and the place the product
+is at its most persuasive because the guest's page updates as you type —
+was invisible until after sign-up. Fixed with three screenshots of the
+real host app, captioned, between "how it works" and pricing.
+
+Two things worth carrying forward:
+
+- **Screenshots of your own dev environment are a data-exfiltration path.**
+  This developer's local database has a real property applied over a
+  sample id, and a real channel calendar token pasted into a sample's
+  calendar field. Both looked like fiction on screen. Every field in a
+  candidate shot was traced back to the seed file before shooting, and one
+  screen (the calendar) was dropped when its contents turned out not to be
+  in the seed. Rule: if a value in the frame can't be found in seed source,
+  it doesn't ship.
+- **Real screenshots buy credibility and owe maintenance.** They go stale
+  when the editor's layout moves, so they belong on the list of things a
+  UI change has to update. The alternative — hand-drawing the host UI in
+  components, as the guest phone deck does — costs a day and can drift
+  from the real thing silently, which is worse than drifting visibly.
