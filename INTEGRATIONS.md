@@ -69,6 +69,29 @@ on a laptop with no domain. Links come from `ENTRIO_SITE_URL`, never the Host
 header. Domain: entrio.ca on GoDaddy (SPF/DKIM/DMARC; GoDaddy's `_spfm`
 rewriting was the verification blocker).
 
+## Cloudflare Email Routing (inbound mail)
+
+Receive-only, and there are no mailboxes: Email Routing takes everything for
+the domain, a catch-all rule hands it to the `email-rsvp` Email Worker, and
+the worker splits it — `rsvp+…` replies are POSTed to `/api/rsvp` (bearer
+`RSVP_SECRET`, which must equal Render's `ENTRIO_RSVP_SECRET`), everything
+else is forwarded to a verified destination inbox. So `support@`, `privacy@`,
+`info@` and any address anybody invents all work with no configuration.
+
+- Both silent failures live here: an **unverified** destination routes
+  nothing, and a `FORWARD_TO` that isn't set makes the worker drop non-RSVP
+  mail without an error. Symptom is identical — mail vanishes.
+- A secret mismatch between the worker and Render breaks only the cleaner
+  RSVP path, and breaks it quietly: the invite sends, the reply arrives, the
+  turnover never moves.
+- Catch-all also forwards spam to invented addresses. If it ever gets noisy,
+  swap to explicit rules — but keep one for `rsvp+*` or the RSVP path dies.
+- **Sending is a different system** (Resend). Replying *as* an @entrio.ca
+  address needs an SMTP relay in the mail client's "send mail as"; Email
+  Routing cannot send.
+
+Full wire-up in the app repo's `DEPLOY.md`.
+
 ## Environment variables
 
 `RESEND_API_KEY`, `ENTRIO_MAIL_FROM`, `ENTRIO_SITE_URL`,

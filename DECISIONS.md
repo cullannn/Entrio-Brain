@@ -560,3 +560,29 @@ Two things worth carrying forward:
   UI change has to update. The alternative — hand-drawing the host UI in
   components, as the guest phone deck does — costs a day and can drift
   from the real thing silently, which is worse than drifting visibly.
+
+
+## 2026-08-08 — The legal pages are written from the code, not from a template
+
+`/privacy` and `/terms` went up, drafted field by field from what the software
+actually does rather than adapted from a template. The reasoning is that a
+template is what creates the legal exposure for a one-person business: it
+promises things the product doesn't do ("we never share your data") while
+Stripe, Resend, Cloudflare and a US host all hold some of it.
+
+Consequences worth keeping:
+
+- **No consent banner, and the page says why.** One cookie, `entrio_session`,
+  set at sign-in; no analytics, pixel, session recorder or third-party tag
+  anywhere. That is a real competitive line, not just compliance.
+- **Retention describes what happens, not what sounds responsible.** Nothing
+  deletes automatically, so the page says so. A twelve-month promise no code
+  keeps is worse than no promise.
+- **Prices and trial length are read from PLANS/TRIAL_DAYS**, the same objects
+  Stripe bills from, so the terms cannot drift from what a card is charged.
+- Cross-border storage (Render Ohio, Stripe US) is disclosed because Canadian
+  law requires it, and identity documents are described as Stripe-held
+  because they are — Entrio stores only the verdict.
+
+Neither page has had a lawyer's eye. The draft is accurate, which is the part
+software can be responsible for; sufficiency is not.
