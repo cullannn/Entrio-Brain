@@ -321,3 +321,20 @@ unaffected — a File reference survives the reset; the list does not.
 snapshot, and copy before mutating its owner. When two paths into the same
 function disagree, the difference is in what each path *passes*, not in the
 function.
+
+## 2026-08-07 — The marketing claim the product couldn't keep
+
+A persona review of the homepage caught it, not a test: the page said a
+guest's entry code "stops working after checkout" and that "last month's
+guest can't get back in" — two sentences below the promise that no smart
+lock is needed. Both were false, and the second sentence is what made the
+first one false. The product hides the code from the guest's page at the
+end of checkout day; with a mechanical lockbox the combination itself
+keeps opening the door until a human changes it. The copy had quietly
+promoted a display rule into a security guarantee.
+**Lesson:** any sentence about what a guest *can't* do is a claim about
+the physical world, and has to be traced to the code that enforces it
+before it ships. Marketing copy deserves the same "where is this
+enforced?" question as an authorisation check — and the safe rewrite is
+usually the literal behaviour ("the code is shown only during their
+stay"), which sells nearly as well and is true.
