@@ -25,6 +25,25 @@
 - The guest portal is a four-tab app; add a screen or a card, never extend a
   scroll. Tab state lives in the URL hash so Back works and tabs deep-link.
 
+## Words in the product
+
+- **Name what the reader sees, not what the system does.** "Arrival details
+  unlock" was our word for a scheduled reveal and it reached seventeen
+  places — the editor, the guidebook, the token panel, the checklist.
+  Nothing on a lockbox unlocks; the details *appear* at a time the host
+  picked. Internal metaphors leak into UI copy one label at a time and are
+  invisible to whoever coined them.
+- Layout vocabulary is ours, not theirs: "hero", "chip", "token", "field
+  group". A host has a main photo, a button, their own details, a section.
+- A feature named for its mechanism gets renamed for its payoff the first
+  time somebody asks what it means. "Fill-ins" → "Their own details",
+  which also says why you'd use it: write once, every guest reads their own.
+- Copy that names a sample, a plan or a screen should read the name from
+  the same source the screen does. A checklist that pointed at "The Luxury"
+  survived two renames of the property it meant.
+- Instructions lead with what the host does. "Step-by-step directions from
+  the street to inside" beats "the Arrival tab contains…".
+
 ## Dates, time, timezones
 
 - **Date-only strings go through `parseDay()`, never `new Date(iso)`** — the
