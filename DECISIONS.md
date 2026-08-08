@@ -507,3 +507,31 @@ Lessons: audit the guide with the same rigor as the product; tick
 completion by witnessing (the Guest-view step marks done only when the
 preview actually renders); and any step teaching a button must quote the
 button's real label.
+
+## 2026-08-08 — The landing page teaches the category before it sells the product
+
+A close read of the market leader's homepage found the gap wasn't
+features, it was **order**. They define the category ("what is a digital
+guidebook?") before naming a single feature; ours went headline →
+benefits, leaving a reader who has never seen this kind of product to
+assemble the concept themselves. Fixed by adding, in this order: a
+definitional band under the hero, and a three-step "what you do" section
+covering the host's own work rather than the guest's experience.
+
+Two structural lessons that generalise past this page:
+
+- **The concepts a product depends on have to be taught somewhere.** The
+  sign-up line said "paste your calendar link" to people who don't know
+  they have one. Removing the jargon from the call to action only works
+  if the idea is introduced earlier; otherwise the page has quietly
+  dropped a required step.
+- **A decision point without an action is a leak.** Neither pricing card
+  had a button, so a reader who chose a plan had to scroll back to the
+  hero. Every place the page asks someone to decide now lets them act.
+
+Deliberately not copied: emoji feature-strips in the subhead, noun-label
+feature names ("Upsell widget", "Data dashboard" — full sentences say
+what happens and read better), and headline proof numbers, which we have
+no honest equivalent of until real hosts are using it. Fabricated social
+proof is off the table; the open question is whether "built and run on a
+real rental" earns its place instead.
