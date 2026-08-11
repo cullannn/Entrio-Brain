@@ -586,3 +586,26 @@ Consequences worth keeping:
 
 Neither page has had a lawyer's eye. The draft is accurate, which is the part
 software can be responsible for; sufficiency is not.
+
+## 2026-08-10 — Every theme is a listing type, and every theme has a home
+
+Themes renamed to what hosts search for on Airbnb: Coastal→Cottage,
+Estate→Villa, Atelier→Studio (Loft already was one). Second rename for two
+of them; ids never change, which is what makes renames free.
+
+Four new sample properties give each theme a worked example — Cottage,
+Villa, Loft, Studio — bringing the template set to six. Deliberate spread:
+each demonstrates a different entry method (lockbox, fob+concierge, keypad,
+gate+lockbox, freight lift, in-person key handoff), so every access path
+the product supports has a template showing how to write it up. The Loft
+carries the pet extra. All content in the simplified register: 4–6 arrival
+steps, one instruction each, because hosts copy the template's *style*.
+
+The lesson that generalises: **materialised seed data needs a top-up
+path.** The template is inserted as real rows at account creation, so any
+sample shipped later would exist only for accounts newer than it. The host
+layout now inserts missing sample ids for accounts that still hold part of
+the sample set (ON CONFLICT DO NOTHING, so edited samples and the local
+private-property patch are untouched); an account that cleared its samples
+holds none and stays cleared. Any future sample ships to everyone by
+itself.
