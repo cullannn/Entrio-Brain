@@ -100,3 +100,28 @@
   sites disagree (labels, gaps lists, gates all got this treatment).
 - `npm run lint`, `npx tsc --noEmit`, `npm test` green before commit; the
   audits run against a dev server when the change touches the wire.
+
+## Seed content rules (learned from the template persona panel)
+
+- **houseRules and meetingNote render as plain text** — no markdown,
+  ever. Only guidebook body/steps go through RichText. The panel caught
+  literal asterisks shipping in a safety rule and a meeting card.
+- **Times in facts are tokens, not strings.** Checkout facts use
+  `{{reservation.checkOutDate}}, by {{property.checkOutTime}}` so a host
+  who changes their checkout time doesn't ship a guidebook that
+  contradicts their own settings.
+- **Every path a page opens must terminate.** An after-hours key pickup
+  that requires somebody to read a message before closing time has a
+  failure branch; make handoffs automatic and give every "what if both
+  doors are dark" a final answer (usually: message me).
+- **A recommendation must be typeable into a GPS.** "The brewery in
+  town" fails in an amalgamated municipality; anchor generic names to a
+  street or a town.
+- **An amenity referenced anywhere must exist somewhere.** The villa
+  recommended a bike route from a house with no bikes — five personas
+  caught it independently.
+- **Occupancy is a number.** "Holds two beautifully and four awkwardly"
+  is a quip doing a rule's job and loses every dispute.
+- **Seed fiction must agree with seed fiction.** Sarah's dog stayed at
+  the no-pets property; cross-check guests, rules and upsell
+  propertyIds together.
