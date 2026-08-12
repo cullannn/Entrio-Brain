@@ -392,3 +392,36 @@ claim about the host's business. The filter is the convention; the fix was to
 apply it at the last place still counting ours as theirs — and to give the
 strip an empty state, because a ruler of dates over blank space reads as a
 broken component rather than an empty one.
+
+## 2026-08-11 — A connection to a mode we can no longer see
+
+**Symptom.** An account emptied through the new admin portal still showed a
+connected Stripe account — one created against the sandbox key.
+
+**Two causes, and the second is the dangerous one.**
+
+1. `resetAccountData` deliberately leaves Stripe alone. That default is right —
+   quietly detaching somebody's live subscription because they asked for a
+   clean dashboard is a much bigger thing than they asked for — but a sandbox
+   connection has to go before the live switch, so it's now an opt-in checkbox
+   and two standalone buttons.
+
+2. **`patchAccount` cannot clear a Stripe id at all.** It writes the indexed
+   columns as `COALESCE($2::jsonb->>'stripeAccountId', stripe_account_id)`, so
+   passing null clears the jsonb key and silently leaves the *column* pointing
+   at the old id. `getAccountByStripeAccount` reads the column — a webhook
+   about the abandoned account would still have resolved to that host.
+   Clearing now has its own function that nulls key and column together.
+
+**The lesson that generalises.** Stripe's two modes are two separate sets of
+books: an `acct_`/`cus_`/`sub_` made under a test key does not resolve under a
+live one. Nothing in the app noticed, because the field is a non-empty string
+either way — the host is told they're connected and taking payments, and the
+first thing to say otherwise is a guest's declined extra. At a live cutover
+this is not an edge case; it is *every* account that ever connected or
+subscribed, all at once. The portal now verifies each id against the key
+actually configured and lists the stranded accounts on /admin/stripe.
+
+**Generalises further:** a mirrored column beside a jsonb blob needs its own
+clearing path. COALESCE-on-update makes "set" and "unset" asymmetric, and the
+asymmetry is invisible until something reads the column.
