@@ -665,3 +665,29 @@ The one genuinely dangerous combination it exists to catch: a live secret key
 beside a test publishable key. The server creates a real payment intent, the
 browser is handed a client secret from the other mode, and the card form
 refuses every card — with no error that names the cause.
+
+## 2026-08-11 — Deletion asks Stripe, not us
+
+The admin portal can delete an account outright — the login and every row filed
+under it, one transaction. Three fences, each stopping a different mistake:
+
+1. **The account's own address, typed out.** The accounts list is a table of
+   similar rows; the failure worth preventing is deleting the one *next to* the
+   one you meant, which is silent and immediate.
+2. **Stripe's answer about whether they're still paying** — not our `status`
+   field. The two disagree in both directions and only one holds the money: a
+   webhook we never received leaves `status` reading trialing over a live
+   subscription, and a cancellation made in Stripe's own portal leaves it
+   reading active over nothing. A subscription id that doesn't *resolve* is
+   not a live subscription and must not block deletion forever on the strength
+   of a string nobody can look up.
+3. **A refusal when Stripe can't be reached at all.** "I don't know whether
+   they're paying" is a reason to stop, not a reason to proceed.
+
+The consequence the screen states plainly, because it reaches somebody who
+agreed to none of this: **every guest link on the account stops working** — a
+stay resolves by token against a reservation row, and those go with the rest.
+The count of affected bookings is shown before the button.
+
+Stripe is untouched by deletion. A connected account belongs to the host;
+closing it is theirs to do.
