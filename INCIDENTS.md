@@ -338,3 +338,39 @@ before it ships. Marketing copy deserves the same "where is this
 enforced?" question as an authorisation check — and the safe rewrite is
 usually the literal behaviour ("the code is shown only during their
 stay"), which sells nearly as well and is true.
+
+## 2026-08-11 — The save that vanished, and the black page that hid why
+
+Creating a property on production intermittently gave a black unbranded
+error page; refreshing showed nothing had saved; the identical click
+worked on the second try. Reported as "happens multiple times".
+
+Two independent defects, and only together do they explain the shape:
+
+1. **The `pg` Pool had no `error` listener.** node-postgres emits `error`
+   on the pool when a *checked-in, idle* client fails — managed Postgres
+   restarting, a proxy dropping a socket, the network blinking between
+   requests. Unhandled, that is an uncaught exception, and Node exits.
+   The in-flight request dies with the process (write lost), and the next
+   request boots a fresh process (works). That alternation is the
+   signature: **a bug that "fixes itself on retry" is a process dying, not
+   a race.**
+2. **No `error.tsx` anywhere in the app**, so Next served its own default
+   error UI. The user could not tell a crash from a validation failure,
+   and — worse — was never told the save may not have landed.
+
+Fixes: a pool `error` listener that logs and survives, `keepAlive: true`,
+one retry in `query()`/`transaction()` gated on connection-level failures
+only, and branded error + global-error boundaries that say plainly "what
+you just saved may not have saved" and carry the digest for log lookup.
+
+**Lessons:**
+- Any long-lived connection pool needs an `error` handler *at creation*.
+  The default behaviour is to crash the process, and it will only ever
+  fire in production, where idle connections actually get dropped.
+- Retry only what is safe to retry, and write down why it is safe. Here:
+  app-generated ids, `ON CONFLICT DO UPDATE`, jsonb merges — no counters.
+  The reasoning belongs next to the retry so the next writer of a
+  non-idempotent statement sees it.
+- Ship an error boundary before shipping to users. An unstyled black page
+  is not just off-brand; it withholds the one fact the user needs.
