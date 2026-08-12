@@ -425,3 +425,51 @@ actually configured and lists the stranded accounts on /admin/stripe.
 **Generalises further:** a mirrored column beside a jsonb blob needs its own
 clearing path. COALESCE-on-update makes "set" and "unset" asymmetric, and the
 asymmetry is invisible until something reads the column.
+
+## 2026-08-12 — The save button that could never work
+
+**Symptom.** "Autosave couldn't reach the server — press Save to try again."
+Pressing Save failed identically. Refreshing would have lost the host's edits.
+It happened while a deploy was going out and a host was editing a property.
+
+**Cause — not a slow network.** Every Next.js server action is identified by an
+**action id baked into the build**, and a new deployment generates new ones
+(Next rotates them at most every 14 days even when the source is unchanged). A
+browser still running the previous build calls an id the new server has never
+heard of — "Failed to find Server Action" — and it will keep calling that same
+dead id for as long as the tab stays open, because the id is in the JavaScript
+it is running. **Retrying is not slow, it is impossible.**
+
+The trap: the only fix is new JavaScript, i.e. a reload, and a reload is
+precisely what discards React state — the half-written guidebook.
+
+**Fix, in two halves.**
+
+1. *Make the reload survivable.* The draft is written to `localStorage` before
+   it is ever sent (`src/lib/draft-stash.ts`), cleared on a successful save,
+   and put back on mount by `useRecoverableState` / `useRestoreDraft`. Restore
+   is **refused if the server value has moved since** the draft diverged —
+   otherwise a draft restored over work saved from another device is a quieter
+   version of the same loss. Also refused if older than a week, corrupt, or
+   identical to the server. Covered by `tests/draft-stash.test.ts`.
+2. *Tell the truth about which failure it is.* Version skew is detected and
+   gets its own state and its own sentence, with a Reload button — no pointless
+   retrying. Genuinely transient failures back off and retry four times over
+   ~30s before saying anything, which is safe for the same reason the database
+   layer's retry is: every write behind autosave is idempotent.
+
+**Lessons.**
+- *A retry is only honest when the failure could succeed next time.* The first
+  fix attempted here — retry with backoff — was correct for one cause and
+  useless for the real one, and would have spent 30 seconds pretending.
+- *Any app with server actions and rolling deploys has this bug.* It is not
+  exotic; it fires on every deploy that catches an open editor. Client state
+  that isn't written down somewhere is state a deploy can delete.
+- Restoring a draft needs a **base fingerprint**, not just a timestamp.
+  "Newer than the server" is unknowable from the client; "the server still
+  says exactly what this draft was written against" is checkable.
+
+Related config, for later: `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` must be stable
+across instances (multi-instance decryption), and `deploymentId` enables skew
+detection — but neither prevents id rotation between builds, so the stash is
+the durable fix.
