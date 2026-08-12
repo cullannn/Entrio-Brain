@@ -473,3 +473,44 @@ Related config, for later: `NEXT_SERVER_ACTIONS_ENCRYPTION_KEY` must be stable
 across instances (multi-instance decryption), and `deploymentId` enables skew
 detection — but neither prevents id rotation between builds, so the stash is
 the durable fix.
+
+## 2026-08-12 — The deploy that failed because Google was mid-release
+
+**Symptom.** A Render deploy failed at 01:21 with twelve `Module not found:
+Can't resolve '@vercel/turbopack-next/internal/font/google/font'` errors, all
+from `playfair_display_*.module.css`. The commit it landed on was a change to a
+PNG generation script — nothing to do with fonts. The next deploy succeeded.
+
+**Cause.** Above the module-not-found noise, the real line:
+`Received response with status 404 when requesting
+https://fonts.gstatic.com/s/playfairdisplay/v40/…woff2`. `next/font/google`
+fetches the stylesheet from fonts.googleapis.com and then downloads each woff2
+from fonts.gstatic.com **at build time**. Google rotated the v40 files between
+those two steps, so every `@font-face` in the generated CSS pointed at a file
+that no longer existed.
+
+**Fix.** The eight families now live in `src/assets/fonts` (latin subset only —
+all `fonts.ts` ever requested), fetched once by `scripts/fetch_fonts.py` and
+read through `next/font/local`. 23 files, 415 KB. Guest-facing behaviour is
+unchanged: `next/font` already self-hosted these at runtime, so no guest's
+phone ever hit Google — what moved is where the *build* gets them.
+
+**Lessons.**
+- *A build-time network dependency is a deploy that can fail for reasons in
+  nobody's changelog.* It cost one failed deploy in the middle of a live
+  payments cutover, and would have picked a worse moment eventually.
+- *Read past the error the tool reports to the error it was caused by.* Twelve
+  "module not found" lines described a symptom; one 404 line above them
+  described the cause. The module-not-found messages named neither the font
+  file nor the network.
+- **`next/font/local` paths must be literal strings.** Composing them with a
+  template literal fails with `Can't resolve 'next/font/local/target.css'`,
+  which names neither the file nor the reason — Next reads the paths out of the
+  source text rather than evaluating them.
+
+**Related, same session:** `deploymentId` was set from `RENDER_GIT_COMMIT` in
+`next.config.ts`, but Render's build runs `docker build`, which passes none of
+the platform's environment into the image. It was silently undefined and the
+version-skew mechanism was off while appearing configured. Now declared as an
+`ARG` in the Dockerfile, as the publishable key already was. **Anything the
+build needs from the platform has to be handed to the container explicitly.**
