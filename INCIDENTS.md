@@ -374,3 +374,21 @@ you just saved may not have saved" and carry the digest for log lookup.
   non-idempotent statement sees it.
 - Ship an error boundary before shipping to users. An unstyled black page
   is not just off-brand; it withholds the one fact the user needs.
+
+## 2026-08-11 — The dashboard counted our properties as theirs
+
+**Symptom.** The host home page said "6 properties" and drew six rows in the
+three-week strip for a host who owned none of them — all six were the shipped
+samples. Occupancy was computed over the same six, so a real property with a
+full month read as a sixth of the truth.
+
+**Cause.** `HostChrome` and `setupSteps` had already learned to filter the
+samples out (`own = properties.filter(p => !isSeedPropertyId(p.id))`); the
+dashboard hadn't. It predates samples becoming permanent furniture, when
+`properties.length === 0` was a meaningful test.
+
+**Lesson.** When a set stops being temporary, every count over it becomes a
+claim about the host's business. The filter is the convention; the fix was to
+apply it at the last place still counting ours as theirs — and to give the
+strip an empty state, because a ruler of dates over blank space reads as a
+broken component rather than an empty one.

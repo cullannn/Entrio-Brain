@@ -609,3 +609,59 @@ the sample set (ON CONFLICT DO NOTHING, so edited samples and the local
 private-property patch are untouched); an account that cleared its samples
 holds none and stays cleared. Any future sample ships to everyone by
 itself.
+
+## 2026-08-11 — Entrio has its own set of keys, and they are not a host's
+
+An operator's portal at `/admin`: every account, what they're entitled to,
+where that entitlement came from, and whether they've built anything with it.
+
+**The gate is a login of its own** — `ENTRIO_ADMIN_PASSWORD` plus
+`ENTRIO_ADMIN_EMAILS` (defaulting to admin@entrio.ca), both environment
+variables, deliberately *not* a flag on a host row. A column is one stray
+UPDATE, one jsonb merge with a user-supplied key, or one over-broad settings
+action away from a host granting themselves the run of everybody else's data;
+an environment variable can only be changed by somebody who can already reach
+the deploy — the person the flag would have been protecting. It also has no
+bootstrap problem, and admin@entrio.ca is not a host account, so there is
+nothing for a mistake there to leak sideways into. Unset password ⇒ `/admin`
+is a **404, not a locked door**, which is the right answer for a fork, a
+preview deploy and a laptop. The unlock ticket is a signed cookie scoped to
+`/admin`, twelve hours, carrying a fingerprint of the password — so rotating
+the password revokes every ticket already issued.
+
+**Granting a plan is a separate field from paying for one.** `compTier` sits
+beside `tier` rather than in it, because `tier` is written from the price on a
+Stripe subscription and nothing else — a grant stored there would be erased by
+the next webhook that mentioned the account. `compTier` outranks both the
+trial clock and the subscription in `planOf` and `accessState`, so every
+entitlement in the app honours it (property ceiling, identity checks), and it
+survives a cancelled subscription and a lapsed trial. Revoking is a deletion,
+not a restore: the fields underneath were never overwritten.
+
+The portal can also push a trial back (counted from today, not from the old
+date — extending an expired trial by a fortnight otherwise leaves it expired)
+and **empty an account back to the day it was made**, behind the account's own
+address typed out in full. That last one exists because the alternative is a
+hand-typed DELETE against production at midnight. What is deliberately absent:
+delete-account, sign-in-as-host, edit-their-data. Refunds and cancellations
+stay in Stripe, which holds the record and the audit trail.
+
+## 2026-08-11 — The simulator's kindness has a cost, and it needed a page
+
+Every payment path falls back to a simulator when its configuration is
+incomplete — on purpose, so a half-set-up deploy serves a guest a working page
+rather than a stack trace. The cost: **"live" and "convincingly pretending"
+look identical from outside.** No error, no banner — a host who has connected
+their bank, a guest who has "paid", and no money anywhere.
+
+`/admin/stripe` states the difference out loud, and asks Stripe rather than
+reading our own flags: the platform account's activation, each plan's price
+and which set of books it belongs to, whether Connect and Identity answer at
+all, the webhook secret, the return address, both key modes agreeing. Nothing
+it reports is a code change — the app is entirely key-driven, so going live is
+environment variables and dashboard switches.
+
+The one genuinely dangerous combination it exists to catch: a live secret key
+beside a test publishable key. The server creates a real payment intent, the
+browser is handed a client secret from the other mode, and the card form
+refuses every card — with no error that names the cause.
