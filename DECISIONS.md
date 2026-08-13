@@ -691,3 +691,79 @@ The count of affected bookings is shown before the button.
 
 Stripe is untouched by deletion. A connected account belongs to the host;
 closing it is theirs to do.
+
+## 2026-08-13 — The trial belongs to Basic, and Basic keeps it
+
+Checkout passed Stripe no trial parameters at all, so a host who subscribed on
+day 3 of 30 was charged that afternoon and forfeited 27 days they had been
+promised. The rational response is to wait until day 29 — a system that pushes
+its most willing users to delay.
+
+**Basic now carries `trial_end`.** The card is *saved* at checkout, the
+subscription starts immediately in Stripe status `trialing`, and the first
+invoice falls due when the free trial would have ended anyway. No money moves
+that day.
+
+**Plus and Ultimate charge immediately** and start immediately. They are bought
+for what they add — identity checks, the property ceiling lifted — and someone
+reaching for those on day 4 wants them that afternoon. Handing over the feature
+and billing three weeks later is a free month nobody offered.
+
+The reasoning that decided it, for when this is revisited: the card on file is
+worth more than the float on $29. With one saved, day 30 is an automatic
+conversion; without one it is a fresh decision made by somebody who may be
+busy or lukewarm. Trial-to-paid conversion is dominated by whether the payment
+method is already there, and charging on subscribe works against exactly that.
+It would flip if the trial were short — at 7 days the float is trivial and
+immediate charging is simpler to explain.
+
+Stripe refuses a trial ending sooner than 48 hours out, so the last two days of
+a trial are charged today rather than erroring in front of somebody trying to
+pay. Both plan cards state which case they are *before* the button.
+
+Both `reconcileSubscription` and the webhook already map Stripe `trialing` →
+our `active`, so a trialing subscription keeps access with no change.
+
+## 2026-08-13 — Rates agreed with one host, and Stripe owns the arithmetic
+
+Custom discounts from the admin portal: percent or amount off, for one of
+Stripe's three durations (once / repeating N months / forever). **A Stripe
+coupon does the maths.** The discount has to survive an upgrade, a downgrade, a
+card retried three days later and the proration of a mid-month switch, and each
+is a place our own subtraction could drift from what the card is charged. A
+host promised half price and billed full price is a refund and an apology; one
+billed half of the *wrong* number is worse, because nobody notices.
+
+Two halves, and the missing one would be invisible: applied to a live
+subscription immediately, **and** carried into Checkout for a host who hasn't
+subscribed yet. Without the second, somebody quoted a rate by a person meets
+the list price on the payment page.
+
+100% off is refused and points at Complimentary access. It is a grant wearing a
+discount's clothes and the two behave differently everywhere that counts — a
+comp needs no card, no subscription and no Stripe at all, whereas a "free"
+subscription still needs a payment method that clears.
+
+Shown to the host on /settings, in the status card and on every plan card
+(list price struck through). All three cards, not just the one they're on: a
+host deciding whether to upgrade needs to know what the upgrade costs *them*.
+
+## 2026-08-13 — Refunds are a state, not an absence
+
+`UpsellStatus` gained `refunded`. Deliberately its own state rather than a walk
+back to `approved`: a refund happened, both parties saw it, and both should be
+able to find it afterwards. Making it a state is also what stops it counting —
+every filter asking for `"paid"` stops matching by itself, which is more
+reliable than four places each remembering to exclude it. The compiler found
+all three status maps needing the new word, which is what exhaustive
+`Record<UpsellStatus, …>` types are for.
+
+Learned from `charge.refunded` on the **connected accounts** destination, since
+guest charges are created on the host's account. The charge carries no stay —
+metadata lives on the Checkout session — so the payment intent is the thread
+back, looked up on the connected account. Keyed to the session that was
+actually refunded, because a repeatable extra can carry several paid lines.
+
+`Mark refunded` sits beside the long-standing `Mark paid` for money handed back
+outside Stripe. It records no amount: the host is saying it went back, not how
+much, and inventing a figure would file a partial cash refund as a full one.

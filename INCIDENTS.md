@@ -514,3 +514,36 @@ the platform's environment into the image. It was silently undefined and the
 version-skew mechanism was off while appearing configured. Now declared as an
 `ARG` in the Dockerfile, as the publishable key already was. **Anything the
 build needs from the platform has to be handed to the container explicitly.**
+
+## 2026-08-13 — The button that did nothing, and said nothing
+
+**Symptom.** A newly shipped "Mark refunded" did not change the line. No error,
+no throw; the action returned and the page revalidated unchanged.
+
+**Cause.** It called `patchUpsellOrder`, which by design refuses anything that
+isn't `requested` or `approved`:
+
+    const open = entry.status === "requested" || entry.status === "approved";
+    if (entry.upsellId !== upsellId || !open) return entry;
+
+That guard is correct. Keying a patch by `upsellId` is only unambiguous while
+exactly one line is open, and a **repeatable extra accumulates settled lines** —
+a mid-stay clean bought twice is two paid rows under one id.
+
+**Fix.** Refunds go through `refundUpsellOrder`, keyed on `upsellId` *plus*
+`requestedAt` — a row, not an extra. The same ambiguity existed in the webhook
+handler written an hour earlier (matching `upsellId` + status paid), which on a
+repeatable extra could have refunded the wrong line; it now keys on the
+Checkout session that was actually refunded.
+
+**Lessons.**
+- *A silent no-op is the worst failure mode a mutation can have.* Both paths now
+  return a miss, and `tests/refund-order.test.ts` covers the two-paid-lines
+  case and cross-account isolation.
+- **When a store function guards its inputs, read the guard before reaching for
+  it.** The guard was three lines long and explained itself.
+- A test written in haste can pass for the wrong reason: the first version of
+  the refund tests used the wrong helper signature (`reservation({...})` where
+  the helper is positional), so dates were undefined, overlap never matched,
+  and an inventory assertion "passed" with zero held. Every case now sits
+  beside a control that must behave the old way.
