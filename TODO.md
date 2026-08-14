@@ -118,9 +118,11 @@ delete them.
   breaks the one thing sceptical hosts trust it for.
 - Rejected outright: QR codes (manual work in the flat), logo upload.
 
-## Per-property day arithmetic (2026-08-13)
-Server "today" is anchored to ENTRIO_TIMEZONE (America/Toronto) as of the
-night-2-of-4 incident. The correct frame for "which night is it" is the
-property's own `timezone`, as `zonedTime` already does for door-code release —
-thread it through `stayTiming`/`daysUntil` call sites when hosts exist outside
-Eastern time.
+## Per-property day arithmetic (2026-08-13) — DONE same day
+Threaded the property's `timezone` through stayTiming/liveStatus/stayLabel/
+daysUntil/relativeDay and all call sites with a property in hand; the timezone
+is now set from the address (Place Details returns `timeZone` beside the
+components; hand-typed addresses derive via Text Search at save, fail-closed).
+Aggregates without a single property (occupancy, revenue windows) stay on the
+ENTRIO_TIMEZONE home anchor. Boundary behaviour pinned at fixed instants in
+tests/timezone-days.test.ts, including the DST changeover.
