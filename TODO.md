@@ -117,3 +117,10 @@ delete them.
   link the host paste themselves; a bot answering in the host's voice
   breaks the one thing sceptical hosts trust it for.
 - Rejected outright: QR codes (manual work in the flat), logo upload.
+
+## Per-property day arithmetic (2026-08-13)
+Server "today" is anchored to ENTRIO_TIMEZONE (America/Toronto) as of the
+night-2-of-4 incident. The correct frame for "which night is it" is the
+property's own `timezone`, as `zonedTime` already does for door-code release —
+thread it through `stayTiming`/`daysUntil` call sites when hosts exist outside
+Eastern time.

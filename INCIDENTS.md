@@ -547,3 +547,40 @@ Checkout session that was actually refunded.
   the helper is positional), so dates were undefined, overlap never matched,
   and an inventory assertion "passed" with zero held. Every case now sits
   beside a control that must behave the old way.
+
+## 2026-08-13 — Night 2 of a stay that started tonight
+
+**Symptom.** At 8:50 p.m. Toronto time, a booking that checked in that day read
+"night 2 of 4" on the host dashboard; the next booking, five days out, read
+"in 4 days"; the dashboard header said "Good morning" at night. All of it
+correct again by morning.
+
+**Cause.** Render's clock is UTC. From 8 p.m. EDT (7 p.m. EST) onward, the
+server's *date* is tomorrow — and `todayIso()` read the process clock, so
+every label derived from `daysUntil`/`stayTiming` drifted a day forward each
+evening and self-corrected at Toronto midnight. Development never showed it
+because the dev machine's clock is Toronto's. The guest page was affected too:
+`arrivalHeadline` is `stayTiming`-based, so a guest at 9 p.m. of their first
+night was told it was night 2.
+
+**Fix.** Server-side day arithmetic is anchored to a home timezone
+(`ENTRIO_TIMEZONE`, default America/Toronto) through `Intl.DateTimeFormat`.
+In the browser the anchor stays the visitor's own timezone. Verified by
+running the helpers under `TZ=UTC` and checking today, night numbers, day
+counts and the greeting all answer in Toronto's frame.
+
+**Lessons.**
+- *A server has a clock but no location that means anything.* Any label that
+  answers "what day is it?" has to name whose day — the process default is
+  whatever datacentre the scheduler picked.
+- **`Intl` over the `TZ` env var in containers.** node:slim ships no tzdata,
+  so `TZ=America/Toronto` would be silently ignored; ICU carries its own
+  timezone data and works everywhere.
+- The bug class is periodic and self-correcting — visible only in the evening,
+  gone by morning — which is the kind a founder sees once, reloads, and
+  doubts. Testing day arithmetic means testing at a time the frames disagree.
+
+**Still owed (TODO):** the true frame is each property's own timezone, exactly
+as `zonedTime` already treats the door-code release — a Vancouver property on a
+Toronto anchor drifts 3 hours in the evening instead of 4 from UTC. Right for
+every current property; wrong the day a host signs up outside Eastern time.
