@@ -645,3 +645,22 @@ the key. Found while adding `finePrint` alongside.
 "forgot one" into silent data loss, and spread-into-typed-param hides it from
 the compiler. When adding a field to a factory, diff the dialog's payload
 against the factory's parameter list.
+
+## 2026-08-14 — A deploy failed because the gate lied
+
+**Symptom.** Render build failed on a pushed commit: a component prop was
+declared in the type but missing from the destructuring — a ReferenceError
+on every render had it shipped.
+
+**Cause.** The pre-push gate ran `typecheck | tail` and `build | grep` inside
+an `&&` chain. A pipeline's exit code is the last command's, so both filters
+reported success over failing tools. `next build` also type-checks *after*
+printing "Compiled successfully" — grepping for that line proves compilation,
+not the build.
+
+**Outcome.** Render refused the bad build (the old version kept serving) and
+the fix was live one minute later. Nothing reached guests.
+
+**Lesson.** Gates run bare or under pipefail; never grep a gate for its good
+news. The deploy pipeline earning its keep here is the system working —
+locally green means nothing if the green was a pipe's.
