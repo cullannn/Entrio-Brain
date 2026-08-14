@@ -584,3 +584,64 @@ counts and the greeting all answer in Toronto's frame.
 as `zonedTime` already treats the door-code release — a Vancouver property on a
 Toronto anchor drifts 3 hours in the evening instead of 4 from UTC. Right for
 every current property; wrong the day a host signs up outside Eastern time.
+
+## 2026-08-14 — "Copy linkon": this Next's JSX transform trims wrapped text runs
+
+**Symptom.** Host-facing copy rendered "press Copy linkon the Guest page
+card" — the space after an inline element vanished. Second instance: "You
+keep **Plus**until the end of the month". Third: "from Airbnb— change them
+there".
+
+**Cause.** This Next version's JSX transform trims plain leading/trailing
+spaces off any text run that *wraps across source lines* — standard JSX only
+eats whitespace adjacent to the newline itself. `<strong>Copy link</strong>
+on the\n Guest page card` compiles to `"on the Guest page card"`, space gone.
+The codebase's habit of explicit `{" "}` after inline elements exists because
+of this; the bugs were the spots that trusted a plain space.
+
+**Fix + tool.** `{" "}` (or `{" — "}`) at every element/text boundary that
+wraps. The reliable audit is the *compiled output*, not the source: after a
+build, `grep -rhoE '\}\),"[a-z][a-z]+ ' .next/server/chunks/ssr/*.js
+.next/static/chunks/*.js` finds element-flush-word joins (three real hits in
+the whole app), and `,"[—–·]` finds the punctuation variant — but check the
+preceding child first: `" ","— …"` is correct by design.
+
+**Lesson.** When a framework reimplements a transform, audit the emitted
+artifact, not your understanding of the spec. The fingerprint scan takes
+seconds and is exhaustive; eyeballing source found one of three.
+
+## 2026-08-14 — The whole departure day counted as departed
+
+**Symptom.** Writing a test for the departure-day headline returned "until
+the next time." at 9 a.m. on checkout morning — the "Departure today /
+checkout is 11am. No rush beyond that." branch was unreachable dead code.
+
+**Cause.** `stayTiming` had `hasDeparted: daysToDeparture <= 0`; on the
+departure day the diff is 0, so the guest's final morning counted as already
+gone. Two call sites had quietly defended against it (`stayLabel` orders
+"departing today" first; a filter wrote `hasDeparted && !isDepartingToday`) —
+defensive code around a predicate is the fossil record of its bug.
+
+**Fix.** Strictly negative, plus companions: `liveStatus` counts
+departing-day as `in_stay`, the bookings badge keeps it sage. Pinned in
+`stay-times.test.ts` at fixed instants.
+
+**Lesson.** A boundary predicate with `<=` deserves a test at the boundary
+day. And when you find call sites working around a helper, the helper is
+lying to them.
+
+## 2026-08-14 — The factory dropped a field the dialog offered
+
+**Symptom.** "Can be bought more than once per stay", ticked at creation,
+silently saved as not-repeatable; it only survived if the host later
+re-saved the card.
+
+**Cause.** `blankUpsell`'s fields list never included `repeatable`; the
+create action spread the draft into it, and spreads bypass TS excess-property
+checks, so nothing complained while the factory rebuilt the object without
+the key. Found while adding `finePrint` alongside.
+
+**Lesson.** A factory that reconstructs its output field-by-field turns
+"forgot one" into silent data loss, and spread-into-typed-param hides it from
+the compiler. When adding a field to a factory, diff the dialog's payload
+against the factory's parameter list.

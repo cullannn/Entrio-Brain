@@ -3,6 +3,22 @@
 Kept current — move things to DECISIONS/INCIDENTS when done, don't just
 delete them.
 
+## Near-term (updated 2026-08-14)
+
+- [ ] **HEIC photo upload** — host photo upload refuses iPhone HEIC with
+      "export it as a JPG"; accept and convert server-side.
+- [ ] **Yonge property setup in Entrio** — Richmond is done; Yonge awaits the
+      Airbnb-details paste (first send arrived empty) + photos + iCal.
+- [ ] **Grab both Airbnb iCal URLs before the PM's Hostaway access ends**
+      (this week). Feeds carry current+future only; history accumulates in
+      Entrio from first sync — anything already checked out is unrecoverable.
+- [ ] **Mid-stay clean has no agreed-hour field** — the ICS says 11am courtesy
+      slot; "agree a time with the guest" has nowhere to be recorded, and the
+      reinvite machinery (2026-08-14) would carry it if it existed.
+- [ ] Cancelled bookings still show the guest-link card in the drawer —
+      harmless, but the invite message reads oddly for a stay that isn't
+      happening.
+
 ## Deferred code findings (from the 2026-08-03 review)
 
 - [x] **Stale-snapshot writes across `await`** — fixed 2026-08-03. All the

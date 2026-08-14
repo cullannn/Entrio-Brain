@@ -767,3 +767,57 @@ actually refunded, because a repeatable extra can carry several paid lines.
 `Mark refunded` sits beside the long-standing `Mark paid` for money handed back
 outside Stripe. It records no amount: the host is saying it went back, not how
 much, and inventing a figure would file a partial cash refund as a full one.
+
+## 2026-08-14 — A stay keeps its own hours
+
+`Reservation` gained optional `checkInTime`/`checkOutTime` ("HH:MM", blank =
+property default), resolved through `stayCheckInTime`/`stayCheckOutTime` in
+domain — the same override-with-fallback shape as the door code. Every clock
+that mentions a stay reads through the resolvers: portal headline and times
+card, guidebook tokens (`{{property.checkOutTime}}` keeps its name but answers
+with the stay's truth), the code-release instant, the upsell hour-window, and
+the cleaner's window from *both* sides — a sold late checkout starts the clean
+later, the arriving guest's early check-in ends it sooner.
+
+Editable in the booking drawer for synced stays too, on purpose: the channel
+owns the dates, but "leave at noon instead" is agreed in a message thread the
+iCal feed never reads. A time set equal to the property default is stored as
+no override, so undo isn't a feature anyone has to learn.
+
+## 2026-08-14 — The farewell flips at the checkout hour
+
+`stayHasEnded()` (checkout instant, property timezone, override-aware) now
+drives the portal's thank-you and headline: at 1:59 a paid 2pm late checkout
+still reads "checkout is 2pm", at 2:01 "thank you for staying". Day-level
+`hasDeparted` couldn't say this before midnight. The entry code deliberately
+keeps day-level manners — a guest stepping back for a forgotten bag at five
+past shouldn't meet a locked page.
+
+## 2026-08-14 — When the window moves, the invite follows
+
+Clean windows are derived, so changing a stay's times or dates moved them
+silently — and an assigned cleaner kept a calendar entry for hours that no
+longer existed. `cleaning-reinvite.ts` (lib, NOT a server action — it takes
+accountId on trust) snapshots the windows a change can touch (the stay's
+turnover + mid-stay, and a same-day predecessor's turnover), recomputes after
+the write, and where one moved: ICS sequence bumped so the calendar updates in
+place, same token so the old link still answers, status back to `invited`
+because a yes to 11-to-3 is not a yes to 2-to-6. Self cleans move silently.
+
+## 2026-08-14 — "Myself" is a valid answer on the schedule
+
+`ReservationCleaning.status` gained `"self"`: no cleaner, no token, nothing
+mailed, but covered. `jobState()` in cleaning.ts is now the single reader
+(schedule rails, sidebar badge, lede arithmetic) — the page and the sidebar
+had been answering "is anybody on it?" separately and drifted one status
+apart the moment a fourth status arrived. Undo reuses withdrawal, with nobody
+to notify. Turnovers also grew a Past tab (checkouts gone, newest first, no
+controls — history takes no assignments) and every sample fence: rows,
+dropdown, sidebar count.
+
+## 2026-08-14 — Fine print is a field, not a paragraph
+
+`Upsell.finePrint` — small faint text after the description on guest and host
+cards, its own quiet input in both editors. A liability line pasted into the
+description makes every card read like a rental agreement; a separate field
+lets the sell stay warm and the caveat stay legible. Blank clears it.
