@@ -821,3 +821,54 @@ dropdown, sidebar count.
 cards, its own quiet input in both editors. A liability line pasted into the
 description makes every card read like a rental agreement; a separate field
 lets the sell stay warm and the caveat stay legible. Blank clears it.
+
+## 2026-08-15 — Extras grew a full negotiation loop
+
+A run of connected decisions, recorded together:
+
+- **"withdrawn" is its own status** — the guest's change of mind, never
+  the host's "declined"; spends nothing, counts nowhere, and leaves no
+  trace on the guest page (the card simply returns to the shelf) while
+  the host's queue keeps the ledger.
+- **"Offer it again"** stamps a declined/refunded line `reopenedAt` —
+  history stays, blocking stops. availableUpsells' everAsked and
+  requestUpsell's dedup are two halves of one rule and must move
+  together; the first time they didn't, the re-offered card's Request
+  button silently no-opped behind the double-tap "ok".
+- **Approval names its price** — prefilled at the ask, moves only down,
+  zero waives and settles instantly; `discountedFrom` keeps the asked
+  price beside the new one because a discount has to be visible to be
+  felt (guest line, queue, drawer, email).
+- **Typed asks** — an extra collects nothing, a message, a time, or a
+  date at request; the picker composes a human string ("3:30pm") that
+  travels as the ordinary note so every surface quotes it unchanged.
+  Legacy asksNote reads as "text" through one upsellAsk() reader.
+- **In-app Stripe refunds** — Refund… beside Mark refunded on paid rows,
+  initiate-only (charge.refunded does the books, same as dashboard
+  refunds); fee note: application fee is kept by default on refunds,
+  flagged as a decision for the third-party-host era.
+- **Manual arrival release** — the drawer can open door details past the
+  timer and the ID hold (detailsReleasedAt); never invents a missing
+  code, never reopens a finished stay. Built the week live Identity was
+  pending Stripe's own "verify yourself" step.
+
+## 2026-08-15 — The cleaner side became a small app
+
+One standing link per cleaner (scheduleToken, minted once, SQL-guarded
+against double-mint so the link can never rotate; edits preserve it).
+The page: three hash tabs — Schedule (day-grouped agenda, Hospitable's
+time-block-left card shape), Calendar (two month grids coloured by
+answer: clay invited > sage accepted > grey declined; declined stays
+visible so the answer can change until reassignment), Requests (inline
+Accept/Decline, count on the chip, brass callout above). Answering an
+invite lands on the schedule, not a spent confirmation page.
+
+Saved-to-home-screen is first-class: a per-token webmanifest (start_url
+is the token URL) makes Add to Home Screen a real standalone app, which
+arms pull-to-refresh (standalone-only, animated pill) and the Badging
+API count. Web Push closes the loop: subscriptions live on the Cleaner
+(one per device, pruned on 404/410), pushes ride beside the emails on
+assign/withdraw/window-move with the pending count as the badge, and
+the auth scanner recognises getCleanerByScheduleToken as a caller
+check. VAPID keys in env — regenerating them silently kills every
+subscription, so they are permanent.
