@@ -895,3 +895,30 @@ approved-unpaid) read the active half only; Collected stays all-time.
 The toggle is local component state, not the URL — the outer tabs own
 the hash, and which half of a queue you're reading is a glance, not an
 address.
+
+## 2026-08-16 — Calendars grew up; the cleaning ledger became editable
+
+The three calendars (bookings, turnovers, cleaner) converged on one
+family: month grids to each property's own horizon (min two months,
+capped at two years), 17px display-face month headings, rules between
+stacked months on phones, past days struck grey — except an in-progress
+stay, whose elapsed nights only fade so the block stays whole. Bookings
+alternate blue/green by arrival order so back-to-back stays read apart
+(the clash clay stays in code as a silent alarm, out of the legend);
+block borders and corners sit only at a stay's true ends, so a week
+wrap reads as one booking cut, not two. Hovering any night lights the
+whole stay (component went client; today decided server-side so
+hydration can't straddle midnight; names-only guest map crosses the
+boundary). Past cleans keep one grey box, named in the tooltip and the
+legend.
+
+The cleaner got a Past tab (after Requests) — cleans file there on
+their own after checkout, chips in past tense, same JobCard as the
+schedule. The host's Past turnovers view keeps the picker on every row:
+assigning a past clean *records* — server books it accepted on the
+spot, no invite mail/push/ics for finished work — and can correct a
+wrong name, not just fill a blank. The clean invite page grew the
+guest's own arrival sections behind a tap, fill-ins and door code
+resolved: the host chose the cleaner, and a cleaner who can't pass the
+lobby cleans nothing. The reservation drawer's Extras figure counts
+paid lines only.
