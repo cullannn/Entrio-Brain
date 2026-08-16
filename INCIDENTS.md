@@ -664,3 +664,16 @@ the fix was live one minute later. Nothing reached guests.
 **Lesson.** Gates run bare or under pipefail; never grep a gate for its good
 news. The deploy pipeline earning its keep here is the system working —
 locally green means nothing if the green was a pipe's.
+
+## 2026-08-16 — HEIC "support" that never decoded a real HEIC
+
+The photo route accepted .heic and claimed to transcode with sharp, but
+prebuilt sharp's libvips only reads HEIF containers holding AVIF — the
+h265 decoder inside actual iPhone HEICs is patent-encumbered and left
+out of the binaries, so exactly the files phones produce threw
+"corrupt header". Surfaced when Cullan tried adding photos to a
+cleaning checklist. Fix: `heic-decode` (libheif wasm, which does carry
+h265) decodes to raw RGBA, then sharp raw→JPEG; verified against a
+real 4032×3024 iPhone shot. Lesson: a codec path isn't supported until
+it has decoded a real file from the device that produces them — accept
+lists and library names are not evidence.
