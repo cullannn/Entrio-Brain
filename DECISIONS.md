@@ -872,3 +872,22 @@ assign/withdraw/window-move with the pending count as the badge, and
 the auth scanner recognises getCleanerByScheduleToken as a caller
 check. VAPID keys in env — regenerating them silently kills every
 subscription, so they are permanent.
+
+## 2026-08-15 — Samples fenced everywhere; the extras queue splits
+
+The samples-are-furniture fence extended to the last two screens that
+still mixed them in once a real property existed: Bookings (rows,
+property dropdown, month calendars) and the Extras screen (queue,
+stats, Sold breakdown). Same rule as Turnovers: a brand-new account
+keeps the samples — an empty screen teaches nothing — and the first
+real property retires them.
+
+The extras queue itself split into Active | Past, keyed on the stay,
+not the line's status: while a guest is here or on the way, all their
+lines are Active (a declined line can still be offered again, a paid
+one refunded); the moment they depart — or the booking cancels — every
+line files under Past. Attention stats (needs approval, approved-unpaid)
+read the active half only, since a request nobody answered before
+checkout is no longer a to-do; Collected stays all-time. The toggle is
+local component state, not the URL — the outer tabs own the hash, and
+which half of a queue you're reading is a glance, not an address.
