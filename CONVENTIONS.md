@@ -134,9 +134,10 @@ so the grids read in greyscale and to red-green colourblind eyes:
 - **Solid dark fill** (clay) = needs action now (uncovered clean, an
   unanswered invite, a double-booked night on the month grid).
 - **Dashed border** on a wash = waiting on someone else (invited).
-- **Thick green ring** on a green tint (sage) = settled yes (covered,
-  accepted, self-cleaned). Never a second solid block: solid clay beside
-  solid sage is the exact red-green pair the shapes exist to tell apart.
+- **Solid bright green** (Tailwind green-500, white number) = settled yes
+  (covered, accepted, self-cleaned). Cullan overrode the ring treatment —
+  covered should read as good news from across the room; the saturation
+  and lightness gap from clay is what keeps the pair apart.
 - **Grey + struck-through number** = declined.
 - **White diagonal hatch** = conflict texture (double-booked blocks on
   the dashboard strip).
