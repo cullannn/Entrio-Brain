@@ -125,3 +125,22 @@
 - **Seed fiction must agree with seed fiction.** Sarah's dog stayed at
   the no-pets property; cross-check guests, rules and upsell
   propertyIds together.
+
+## Calendar state coding (2026-08-16)
+
+Hue never carries a state alone — every calendar state also has a shape,
+so the grids read in greyscale and to red-green colourblind eyes:
+
+- **Solid dark fill** (clay) = needs action now (uncovered clean, an
+  unanswered invite, a double-booked night on the month grid).
+- **Dashed border** on a wash = waiting on someone else (invited).
+- **Thick green ring** on a green tint (sage) = settled yes (covered,
+  accepted, self-cleaned). Never a second solid block: solid clay beside
+  solid sage is the exact red-green pair the shapes exist to tell apart.
+- **Grey + struck-through number** = declined.
+- **White diagonal hatch** = conflict texture (double-booked blocks on
+  the dashboard strip).
+- **Outline (not border)** = today, so it never fights a state's border.
+
+Legend swatches always use the cell's exact classes, and month grids that
+float outside a plate get their own bordered box per month.
