@@ -882,12 +882,16 @@ stats, Sold breakdown). Same rule as Turnovers: a brand-new account
 keeps the samples — an empty screen teaches nothing — and the first
 real property retires them.
 
-The extras queue itself split into Active | Past, keyed on the stay,
-not the line's status: while a guest is here or on the way, all their
-lines are Active (a declined line can still be offered again, a paid
-one refunded); the moment they depart — or the booking cancels — every
-line files under Past. Attention stats (needs approval, approved-unpaid)
-read the active half only, since a request nobody answered before
-checkout is no longer a to-do; Collected stays all-time. The toggle is
-local component state, not the URL — the outer tabs own the hash, and
-which half of a queue you're reading is a glance, not an address.
+The extras queue itself split into Active | Past. First cut keyed the
+split on the stay alone — a current guest's declined and withdrawn
+lines stayed Active "because Offer it again still applies" — and
+Cullan caught it immediately: those are exactly the clutter the split
+was for. Final rule: a line's own no (declined, withdrawn, refunded)
+files it under Past at once, and a departure or cancellation files
+whatever is left; Active is only requests, unpaid approvals and paid
+extras for guests here or on the way. Offer it again works from Past —
+reopening is an act on history. Attention stats (needs approval,
+approved-unpaid) read the active half only; Collected stays all-time.
+The toggle is local component state, not the URL — the outer tabs own
+the hash, and which half of a queue you're reading is a glance, not an
+address.
