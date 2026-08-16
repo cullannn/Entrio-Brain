@@ -922,3 +922,17 @@ guest's own arrival sections behind a tap, fill-ins and door code
 resolved: the host chose the cleaner, and a cleaner who can't pass the
 lobby cleans nothing. The reservation drawer's Extras figure counts
 paid lines only.
+
+## 2026-08-16 — Cleaning checklists
+
+New entity (own jsonb table, `ckl_` ids): a checklist is name + sections
+(title + steps) + propertyIds, authored on Turnovers' fourth tab with a
+one-textarea-line-per-step editor, scoped by ticking properties (server
+intersects posted ids with owned, seeds excluded). The cleaner's job
+page shows each applicable list as a foldable card — sections fold to
+steps, per-section and overall progress chips go green when complete —
+and every tick persists to the job's cleaning record
+(`checklistDone[checklistId] = ["section:step", …]`) under the row
+lock, invite token as caller. Ticks live on the JOB, not the checklist:
+two cleans of the same flat are two fresh lists, and no mail is sent —
+a working list, not an audit.
