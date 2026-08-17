@@ -936,3 +936,26 @@ and every tick persists to the job's cleaning record
 lock, invite token as caller. Ticks live on the JOB, not the checklist:
 two cleans of the same flat are two fresh lists, and no mail is sent —
 a working list, not an audit.
+
+## 2026-08-16 — Hospitable went live; the clean window hardened
+
+Channel managers now dispatch through one seam (integrations/manager):
+each adapter parses its own credential and speaks the shared Remote
+vocabulary. Hospitable is real — PAT as the whole credential, v2 API,
+per-property reservation queries filtered by checkout so in-residence
+guests arrive too, everything read defensively (cents, ISO days,
+status at reservation_status.current.category). PATs are fine while
+Entrio's hosts are ourselves; the third-party era needs OAuth (TODO).
+Migration rule: a booking already present via iCal (same confirmation
+code, or same property+dates) is CONVERTED in place — portal link,
+door code and extras survive — never duplicated, and the iCal planner
+treats the converted row's nights as spoken for. The dead
+ENTRIO_PROVIDER seam (integrations/index, mock) retired. Stubbed-API
+test suite pins listing adoption, named-guest import and the twin
+conversion.
+
+Separately, the clean window is now capped at four hours from checkout
+everywhere — a same-day arrival can only shorten it. And guests' phone
+became optional at claim: email is the reachable channel, a demanded
+number is how a made-up one gets recorded; a number offered is still
+held to shape.
