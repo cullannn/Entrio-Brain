@@ -959,3 +959,24 @@ everywhere — a same-day arrival can only shorten it. And guests' phone
 became optional at claim: email is the reachable channel, a demanded
 number is how a made-up one gets recorded; a number offered is still
 held to shape.
+
+## 2026-08-17 — The welcome message sends itself, and bookings ring a doorbell
+
+Auto-welcome: when the switch is on (Settings, under the connection),
+a booking newly adopted from the channel manager gets the welcome
+message posted into its own platform thread via Hospitable's message
+API — name, arrival date and portal link filled by renderTemplate.
+Sent on the ADOPT path only, so updates, cancellations, backfills,
+in-residence stays and converted iCal twins can never trigger it;
+receipted as welcomeSentAt; future arrivals only; toggle defaults off.
+The template lives on the account; an untouched box stores null and
+keeps following the default. Sending requires a PAT with message
+permission — read-only tokens refuse with words naming the switch.
+
+Webhooks land on /api/hospitable/webhook as a DOORBELL: the payload is
+never read — any event triggers the same authenticated API pull — so
+there are no signatures to verify and nothing to spoof; keyed by
+ENTRIO_CRON_SECRET in the query string (their form sets no headers),
+404 without it, 30s per-account cooldown. Verified live end-to-end
+with Hospitable's test ring. Cron + open-the-app refresh remain the
+safety net beneath it.
