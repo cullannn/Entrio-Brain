@@ -677,3 +677,16 @@ h265) decodes to raw RGBA, then sharp raw→JPEG; verified against a
 real 4032×3024 iPhone shot. Lesson: a codec path isn't supported until
 it has decoded a real file from the device that produces them — accept
 lists and library names are not evidence.
+
+## 2026-08-17 — Hospitable's live JSON differed from every document about it
+
+The adapter was written from official docs and a community client; a
+read-only smoke test against the real API (Cullan's PAT in .env.local,
+masked output) caught two shapes nothing had documented: `timezone` is
+a UTC offset ("-0400"), not an IANA name — stored as-is it would crash
+every Intl formatter once a property was created from a listing — and
+guest emails arrive mostly blank or as parenthesised placeholders,
+which stored verbatim would tell the portal the guest is reachable.
+Both refused at the normaliser; stub suite pins them. Same lesson as
+the HEIC decoder, in API form: an integration isn't validated until it
+has parsed a real response from the real service.
