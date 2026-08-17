@@ -980,3 +980,23 @@ ENTRIO_CRON_SECRET in the query string (their form sets no headers),
 404 without it, 30s per-account cooldown. Verified live end-to-end
 with Hospitable's test ring. Cron + open-the-app refresh remain the
 safety net beneath it.
+
+## 2026-08-17 — The pre-arrival nudge, the rehearsal, and the debt rule
+
+Second message moment: pre-arrival, sent by the hourly cron once now is
+within the host's configured lead (days+hours before the stay's own
+check-in moment, property timezone, early check-ins included; default
+24h, clamped 1h–14d, stored as preArrivalLeadMinutes). Receipted as
+preArrivalSentAt; never after check-in; suppressed permanently when the
+welcome landed within lead+6h of arrival (a last-minute booker isn't
+messaged twice). Welcome sends that FAIL at adoption (read-only token,
+rate limit) stamp welcomeDueAt — a debt the sweep repays while the stay
+is ahead — so a bad token day can't mean a guest never hears from us,
+and enabling the switch later still can't blast the back catalogue.
+
+Testing without a write token: the Rehearsal panel (Settings, under the
+message cards) renders every upcoming booking's exact message text and
+send moment from the live templates and the same clock arithmetic —
+read-only by construction. sendDueMessages(account, now) is the one
+clock; the rehearsal imports its exported arithmetic rather than
+duplicating it.
