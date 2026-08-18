@@ -1000,3 +1000,33 @@ send moment from the live templates and the same clock arithmetic —
 read-only by construction. sendDueMessages(account, now) is the one
 clock; the rehearsal imports its exported arithmetic rather than
 duplicating it.
+
+## 2026-08-18 — Guest Insights: first-party analytics, expert-UAT'd
+
+Chose homegrown first-party over any third-party analytics because the
+portal URL is a credential — a token shipped to GA is a door code
+shipped to Google. Events table (thin: ids, name, clamped meta, coarse
+device; never token/IP/UA/cookies; pruned at 180d by the cron), beacon
+route with the portal token as caller check, sendBeacon client with a
+queue-until-armed pencil. Instrumented: page_view per tab, guide_open,
+extra_view (real impression, 60% visible once per extra), extra_request,
+nearby_click (map + website), code_copy (after successful write),
+review_click. Insights is an Ultimate feature with turnovers' manners:
+Settings→Features switch (server-refused below plan), rail item when on,
+page of four decisions (tab usage, guide leaderboard + never-opened
+list, extras funnel joined to real orders for revenue, nearby) with CSS
+bars and per-stay counts beside every raw count.
+
+A UAT pass by an analytics/UX expert subagent found three shipping
+blockers, all fixed same-session: extra_view fired on the Request tap
+(funnel measured button presses), the host's own visits to real guest
+links counted as engagement (now silenced client-side AND refused at
+the beacon via session check), and collection ignored the plan/toggle
+while the UI said otherwise (both ends now enforce it). Plus: window
+coherence (upcoming stays in denominators, paid join by settlement date
+across all real bookings), guide keyed by property+section id with
+titles resolved from today's guidebook, beacon meta validated against
+the property's own facts so a hostile guest can plant nothing the host
+didn't write, rate limiter keyed on resolved reservations with real
+eviction, reads capped. Lesson: UAT the numbers, not the page — every
+wrong metric was plausible on screen.
