@@ -1030,3 +1030,20 @@ the property's own facts so a hostile guest can plant nothing the host
 didn't write, rate limiter keyed on resolved reservations with real
 eviction, reads capped. Lesson: UAT the numbers, not the page — every
 wrong metric was plausible on screen.
+
+## 2026-08-19 — Host push + icon badge mirror the cleaner pattern
+
+The host app now does what the cleaner app already did: Web Push and a
+home-screen badge. Choices that matter: one counting function
+(lib/attention) feeds the sidebar badges, the icon badge and every
+push's badge field, so no two surfaces can disagree by one status
+again; pushes are twins of the emails the host already gets (extra
+requested, cleaner accepted/declined, guest introduced, guest
+verified) — no new notification channel was invented, and new-booking
+pushes were deliberately skipped because the OTA already sends those.
+Subscriptions live on the account row like the cleaner's live on
+theirs; sends prune 404/410 endpoints; the host sender is wrapped
+whole in a catch because a push is a courtesy on top of the mail. Two
+service workers coexist by scope — the host's at "/", the cleaner's
+more-specific "/clean/" wins for its pages. The enable button sits on
+Today and disappears once on, same manners as the cleaner page.
