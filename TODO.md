@@ -142,3 +142,9 @@ components; hand-typed addresses derive via Text Search at save, fail-closed).
 Aggregates without a single property (occupancy, revenue windows) stay on the
 ENTRIO_TIMEZONE home anchor. Boundary behaviour pinned at fixed instants in
 tests/timezone-days.test.ts, including the DST changeover.
+
+- **SEO follow-up (from ~2026-09-15):** Search Console is verified and the
+  sitemap submitted (Aug 20). Once Performance data accumulates, read the
+  Queries table and write the next /guides pages against queries ranking
+  15–30. Guides are registry-driven (src/components/guides/registry.ts):
+  one entry + one page = hub, sitemap and cross-links all update.
