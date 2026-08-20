@@ -1047,3 +1047,23 @@ whole in a catch because a push is a courtesy on top of the mail. Two
 service workers coexist by scope — the host's at "/", the cleaner's
 more-specific "/clean/" wins for its pages. The enable button sits on
 Today and disappears once on, same manners as the cleaner page.
+
+## 2026-08-20 — Per-stay insights, honest legal pages, and an SEO layer
+
+Insights grew a second altitude: Stay-by-stay lists every engaged guest
+and opens into that stay's chronological trail (day-grouped in the
+property's clock, consecutive taps coalesced, loud moments — asks, code
+copies, review taps — dotted brass). The detail reads the full 180-day
+event window, not the filter's. Writing the privacy update surfaced two
+real deletion gaps: booking deletion now removes the stay's events
+(jsonb key match — events has no reservation_id column), and account
+deletion sweeps the events table. Privacy/terms rewritten from the code
+as it stands: Insights disclosed in full, Hospitable + push carriers on
+the third-party list, cleaners the third kind of people, auto-expiry
+exception named. SEO: robots.ts (app surfaces disallowed; tokened guest
+pages deliberately crawlable so noindex is READ — disallow would leave
+leaked URLs indexable), sitemap of the six public pages only,
+hand-written home title/description, canonicals, JSON-LD offers from
+PLANS, OG defaults + a Cormorant-on-linen unfurl card. Walk times now
+multiply haversine by the 1.3 circuity factor before dividing by 80
+m/min — straight-line ÷ pace read five where Google said seven.
