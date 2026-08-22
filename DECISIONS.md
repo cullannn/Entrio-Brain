@@ -1067,3 +1067,23 @@ hand-written home title/description, canonicals, JSON-LD offers from
 PLANS, OG defaults + a Cormorant-on-linen unfurl card. Walk times now
 multiply haversine by the 1.3 circuity factor before dividing by 80
 m/min — straight-line ÷ pace read five where Google said seven.
+
+## 2026-08-22 — Extras windows grow up; the last-day note goes to the inbox
+
+Three connected moves around the departure end of a stay. (1) A settled
+time-extra now writes the stay's clock itself: every settle point (free
+approval, Stripe, cash) applies the guest's answered time via a pure
+soldTimePatch — the extra's NAME picks the side (early/arrival →
+check-in, late/departure → checkout, ambiguous → untouched), and the
+time only ever moves in the guest's favour. (2) The extras close bound
+carries an anchor: departure-anchored options (days/hours before
+checkout) replace night-counting "third night", which closed too early
+on long stays and after checkout on short ones; legacy values keep
+their label and their select seat until the host re-picks. (3) A
+per-property checkout-reminder email mails the guest page's "Before
+you go" card (default = the card condensed; custom wording per
+property; blank = follow the default) a day before the stay's own
+checkout moment — late checkouts shift it, one-night stays wait for
+arrival, receipted once, Resend not channel thread so calendar-link
+hosts get it too. All three read stayCheckOutTime, so a bought late
+checkout propagates into the window, the email copy and the clean.
