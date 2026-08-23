@@ -1087,3 +1087,24 @@ checkout moment — late checkouts shift it, one-night stays wait for
 arrival, receipted once, Resend not channel thread so calendar-link
 hosts get it too. All three read stayCheckOutTime, so a bought late
 checkout propagates into the window, the email copy and the clean.
+
+## 2026-08-22 — The messaging suite rounds out; writing gets a vocabulary
+
+The Hospitable thread now speaks at all four beats of a stay: welcome
+(instant), pre-arrival (lead before check-in), post-arrival (lead
+after check-in, default 18h — mid-morning after a late-afternoon
+arrival, never after checkout), pre-departure (lead before checkout,
+never before the stay begins). Each has its own receipt, configurable
+days+hours lead, and editable wording that stores blank while equal to
+the default so it follows improvements. The checkout-reminder EMAIL is
+a separate per-property channel with its own receipt — either or both.
+Email extras: **bold** renders in the shell (stripped in text part),
+host-authored lines escaped; "Email me a test" rehearses on a fictional
+stay to the host's inbox (no receipts/tracking); all mail leaves as
+support@entrio.ca (ENTRIO_MAIL_FROM updated on Render). Email tracking
+is first-party only: own pixel + /api/email/go redirect, gated by the
+same Insights plan+switch, funnel plate joins reminded stays to
+review_click. Writing surfaces: typing { opens a filtered token menu
+(TokenSuggest wrapper, native-setter insertion so controlled fields
+keep their own onChange); {{property.hostName}} is per-property,
+mandatory-nagged in Basics, "your host" when blank.
