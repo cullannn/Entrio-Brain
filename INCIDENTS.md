@@ -690,3 +690,19 @@ which stored verbatim would tell the portal the guest is reachable.
 Both refused at the normaliser; stub suite pins them. Same lesson as
 the HEIC decoder, in API form: an integration isn't validated until it
 has parsed a real response from the real service.
+
+## 2026-09-14 — Calendar RSVP dropped after withdraw-and-reinvite
+
+**What happened:** a cleaner declined by mistake from her calendar, the
+host withdrew and re-invited her, she accepted from the calendar entry
+she already had — and the accept was rejected as "no longer live".
+Render logs showed both replies carrying the same, now-retired token.
+**Why:** every invite mints a new token and the reply address embeds it,
+but the cleaner's calendar keeps the entry under the same ICS UID and
+replies to the organizer address it first learned. **Fix:** the RSVP
+route falls back to the ICS UID (which names the job regardless of
+token) when the token is stale, and honours the answer only if the
+replying address is the currently invited cleaner's; the live token
+then drives the state change. **Lesson:** anything a third-party client
+caches (calendar entries, bookmarks) must be resolvable by a stable
+identity, not a rotating credential — rotate the secret, keep the name.
