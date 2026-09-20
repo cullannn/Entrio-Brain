@@ -1167,3 +1167,20 @@ hand on a phone. Same day: guidebook fact cells got a brass label and a
 real hairline on a recessed fill, after pane-on-pane-on-glass made
 "Parking spot" and its neighbours indistinguishable from the section
 around them.
+
+## 2026-09-19 — The pager handles the drag itself
+
+Cullan, from his phone: dragging across the tabs did nothing, in the
+guest portal and the host app. Guest side: the first cut relied on the
+browser handing a sideways drag up from the screen (a vertical scroller)
+to the pager behind it — and a vertical scroller nested in a horizontal
+one is exactly where iOS keeps the gesture and never chains it. The
+track now takes `touch-action: pan-y` (up-and-down stays native) and
+handles sideways drags itself: it follows the finger by writing
+`scrollLeft`, and on release settles on the nearest page, or the next
+one over for a flick (>0.35 px/ms). Host side: a sideways flick on a
+page (≥70px, mostly horizontal, under 700ms, not started on a field or
+on something that scrolls sideways itself) navigates to the neighbouring
+dock destination — separate routes, so it navigates rather than slides.
+Rule: never assume nested-scroller chaining on iOS; drive a pager's
+horizontal axis yourself.
