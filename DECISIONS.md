@@ -1140,3 +1140,30 @@ colour in the material is now color-mix'd from linen / ink / bone /
 brass tokens, so a theme that swaps linen and ink gets dark glass with
 light edges for free. Semantic colours (clay/sage/green/grey tiles, the
 brass notices) stay opaque — the legend must not soften.
+
+## 2026-09-19 — The guest tabs become a pager
+
+Cullan: "on other iOS apps the user is able to drag across different
+tabs, can we do that too?" The portal's screens now sit side by side in
+a native scroll-snap row (`snap-x snap-mandatory`, `snap-always` so a
+fling moves one page at a time) — the browser's own momentum and
+rubber-band, no gesture code — and each screen is its own vertical
+scroller, so a screen stays where you left it, as in a real app. The
+hash is still the one truth: a tap or Back slides the pager (snapping
+is switched off for the slide, because Chrome re-snaps to the page it
+is leaving a few pixels in and the slide dies; a `settling` ref keeps
+the settle listener quiet until the slide arrives, and a 1.5s rescue
+finishes a stalled slide by hand so the tab bar and page can never
+disagree), and a swipe writes the hash once the pager has stopped
+(120ms after the last scroll event). Scroll events don't bubble, so the
+pager's listener never hears a screen scrolling up and down; the title
+bar listens in the capture phase instead and reads the active screen.
+Sheets lock the active screen too (`lockPortalScroll`), not just
+`main`. Desktop is untouched: the row is a column with the other
+screens hidden. Lesson: a background automation tab freezes
+requestAnimationFrame, so smooth scrolls and scroll events never fire
+there — the pager cannot be verified through the MCP browser, only by
+hand on a phone. Same day: guidebook fact cells got a brass label and a
+real hairline on a recessed fill, after pane-on-pane-on-glass made
+"Parking spot" and its neighbours indistinguishable from the section
+around them.
