@@ -18,6 +18,10 @@
   `rgba(255,…)` in a surface: `color-mix(… var(--color-linen) …)`, so a
   dark property theme inverts it. Semantic colours (clay, sage, green,
   grey tiles, brass notices) stay opaque.
+- **Buttons, badges and tags are capsules** (`rounded-full`) — filled ink,
+  outlined and coloured alike; outlined ones carry the glass-lite fill
+  (`border-linen/80 bg-linen/70` + inset linen highlight). Text fields keep
+  their soft corners: a textarea can't be a pill.
 - Mobile chrome floats: docks and top bars are laid over the scroller
   (absolute in the app frame, never `fixed`), and the scroller pads by
   their height. The host dock is icons only with sr-only names; the
