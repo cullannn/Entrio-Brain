@@ -706,3 +706,28 @@ replying address is the currently invited cleaner's; the live token
 then drives the state change. **Lesson:** anything a third-party client
 caches (calendar entries, bookmarks) must be resolvable by a stable
 identity, not a rotating credential — rotate the secret, keep the name.
+
+## 2026-09-20 — Nearby screen ran 87px past the right edge on phones
+
+**What happened.** After the guest tabs became a pager, the Nearby
+screen's cards had no right margin on a phone; the content column
+measured 477px inside a 390px page. Only Nearby showed it.
+
+**Cause.** The pager put each screen's content (TabHeader + TabBody)
+directly into a `flex flex-col`. TabBody carries `mx-auto`, and auto
+margins on a flex item's cross axis cancel `align-items: stretch` — the
+item is sized fit-content instead of to the container. Fit-content is
+bounded below by min-content, and Nearby's chip row is a single-line
+flex of non-wrapping chips whose min-content is the sum of all chips —
+wider than the phone. Every other screen's min-content fit, so only
+Nearby grew.
+
+**Fix.** A plain block `<div>` between the column and the content
+(commit c5e7e44), which puts the body back in block layout where
+`mx-auto` only centres.
+
+**Lesson.** `mx-auto` on a direct child of a flex column is fit-content
+sizing, not centring. When a component that centres itself moves into
+a flex parent, wrap it in a block — or give it `w-full`. Measure
+`page.scrollWidth === page.clientWidth` on every screen at 390px after
+any shell change; the check is one line in the iframe.
