@@ -11,6 +11,17 @@
 - Interaction: **recessed = information, raised = tappable, filled = primary
   action.** Press states over hover — the portal is read on phones.
 - The entry-code card is brass-wash with ink numerals, never dark.
+- **Surfaces are glass, mixed from tokens.** `plate` for content cards
+  (translucent linen, no blur), `glass`/`glass-ink`/`glass-brass` only
+  for what floats over scrolling content (docks, bars, sheets, the entry
+  code — blur is expensive in a long list). Never `white`, `#fff` or
+  `rgba(255,…)` in a surface: `color-mix(… var(--color-linen) …)`, so a
+  dark property theme inverts it. Semantic colours (clay, sage, green,
+  grey tiles, brass notices) stay opaque.
+- Mobile chrome floats: docks and top bars are laid over the scroller
+  (absolute in the app frame, never `fixed`), and the scroller pads by
+  their height. The host dock is icons only with sr-only names; the
+  guest dock keeps labels.
 - Affordances match physical reality: copy buttons only where a value can be
   pasted somewhere (smart-lock codes and wi-fi passwords yes; lockbox wheels
   and network names no).
