@@ -1108,3 +1108,35 @@ review_click. Writing surfaces: typing { opens a filtered token menu
 (TokenSuggest wrapper, native-setter insertion so controlled fields
 keep their own onChange); {{property.hostName}} is per-property,
 mandatory-nagged in Basics, "your host" when blank.
+
+## 2026-09-19 — The surfaces turn to glass
+
+The whole product re-skinned in the iOS "liquid glass" material, from
+mocks built on real phone-width captures of the live app (approved
+before any code moved). It is a re-skin of *surfaces*, not a redesign:
+every layout, every line of copy and the whole colour language stay.
+The material lives in globals.css as one recipe in grades — `plate` (a
+two-thirds linen pane with a lit top edge, NO backdrop blur, for the
+hundred-odd content cards: a list can hold thirty and a phone repaints
+every one on scroll), `glass` / `glass-ink` / `glass-brass` (blurred,
+reserved for what floats over scrolling content: docks, bars, sheets,
+the entry code), `glass-bar`, `pane`, `glass-sheen`, and a fixed
+`wash-ground` (bone with faint brass/sage washes — on a flat colour,
+glass is indistinguishable from paint; fixed because iOS ignores
+background-attachment). Both mobile tab bars became floating docks laid
+over the scroller (absolute in the app frame, not fixed, so browser
+chrome can't drag them; the scroller pads top and bottom by the bars'
+heights). The host dock is icons only — six labels overflowed a phone —
+with sr-only names; the guest dock keeps its four labels, because a
+first-time guest can't read "Arrival" from a door. The guest page gained
+two things: the content sheet starts ~40px up the photograph, and a
+glass title bar with the property's name slides in once the photo has
+scrolled out of the shell's scroller (ScrollTitle, rAF-throttled, hero
+detected by offsetParent so a hidden panel doesn't count). Lesson that
+cost a round: the first cut mixed the material from white and black;
+the Yonge sample's dark theme rendered the entry code as a beige slab
+with unreadable digits and the house-rules header black-on-black. Every
+colour in the material is now color-mix'd from linen / ink / bone /
+brass tokens, so a theme that swaps linen and ink gets dark glass with
+light edges for free. Semantic colours (clay/sage/green/grey tiles, the
+brass notices) stay opaque — the legend must not soften.
