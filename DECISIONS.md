@@ -1209,3 +1209,30 @@ so release navigates, and a `pending` slot is shown until the route
 lands — the lozenge springing back to the old tab during navigation read
 as a refusal. Small haptic tick (`navigator.vibrate(3)`, Android only)
 as each item lights.
+
+## 2026-09-20 — Basics and Arrival take their own details and bold
+
+Cullan: "make sure we can add fill-ins on a property's arrival and
+basics sections, and allow bolding in the basics section." The rule
+now: every field a guest reads as prose takes the `{` menu and draws
+`**bold**` — the tagline, the way-in note, the line under the code and
+the meeting plan in Basics; summary, steps and fact values in the
+guidebook editor (only the body had the menu). The guest page runs the
+four Basics fields through `renderTemplate` and RichText/RichInline;
+the host's live preview is an iframe of the real route, so nothing was
+duplicated. Two consequences handled: (1) `{{property.accessNote}}` is
+itself a token hosts drop into chat messages, and a chat can't draw
+emphasis — so the pass resolves the note's own fill-ins once (its own
+token blank, so a note naming itself collapses rather than recurses)
+and strips the marks (`plainText`) before it stands in; the outer
+template keeps its marks for whichever renderer draws it. (2) The
+page's share description is the tagline with this guest's details in
+and the marks off, `released: false` because an unfurl is cached by
+whoever's chat it lands in. Host-facing captions (properties list,
+booking drawer) drop the marks too. Same day: the dock's lozenge became
+ink glass — a near-white lozenge on linen glass was hard to find and
+vanished on dark themes; ink swaps with the theme so it's dark on a
+light room and light on a dark one. And a dock bug: a release was kept
+until the active place matched the drag's origin, which also held
+whenever the guest returned to that tab, re-lighting an old
+destination — now dropped on any change of the active place.
