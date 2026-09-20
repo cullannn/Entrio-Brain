@@ -39,6 +39,10 @@
   share the literal so they can't drift.
 - The guest portal is a four-tab app; add a screen or a card, never extend a
   scroll. Tab state lives in the URL hash so Back works and tabs deep-link.
+  On a phone the screens are pages in a scroll-snap pager (swipe between
+  them, each with its own scroll); anything that needs "the scroller" must
+  take the active screen (`main [data-screen][data-active]`), not `main` —
+  `lockPortalScroll` does this for sheets.
 
 ## Words in the product
 
