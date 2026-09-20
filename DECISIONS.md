@@ -1184,3 +1184,28 @@ on something that scrolls sideways itself) navigates to the neighbouring
 dock destination — separate routes, so it navigates rather than slides.
 Rule: never assume nested-scroller chaining on iOS; drive a pager's
 horizontal axis yourself.
+
+## 2026-09-20 — The dock's lozenge follows the finger
+
+Cullan: "why can't we drag across the nav so it has a fluid motion (like
+the iOS glass fluid)?" — and then, "on both the host page and the guest
+page". The iOS 26 gesture is on the bar itself: press it and the glass
+pill comes to your finger, slide and it follows, let go and it lands on
+the item beneath. One shared `GlassDock` now does this for both apps.
+The lozenge is a single moving element (transform-positioned: a slot
+wide, `translateX(i × 100%)` at rest with no measurement, px under the
+finger with `scale(1.06 + stretch)` where the stretch is speed and
+relaxes 90ms after the finger rests; spring release
+`cubic-bezier(.32,1.4,.5,1)`), not a style on the active item — a thing
+that moves reads as a thing you can move. Pointer events with window
+listeners, `touch-action: none` on the row, `draggable={false}` on the
+links (a mouse-dragged link starts HTML5 drag and eats the gesture), and
+the click that follows a pointer release is swallowed once so a tap
+isn't handled twice — keyboards keep their clicks. Guest: the pager
+slides in step with the pill (a slot of dock for a screen of page), so
+the bar is a scrubber for the whole app; a `dragging` ref keeps the
+settle listener quiet while any finger is down. Host: separate routes,
+so release navigates, and a `pending` slot is shown until the route
+lands — the lozenge springing back to the old tab during navigation read
+as a refusal. Small haptic tick (`navigator.vibrate(3)`, Android only)
+as each item lights.
