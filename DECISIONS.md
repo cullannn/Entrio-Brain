@@ -1236,3 +1236,19 @@ light room and light on a dark one. And a dock bug: a release was kept
 until the active place matched the drag's origin, which also held
 whenever the guest returned to that tab, re-lighting an old
 destination — now dropped on any change of the active place.
+
+## 2026-09-21 — The last-day card joins the per-booking message list
+
+Cullan: "the ability to show or hide the checkout reminder message for
+each guest/booking that shows up on their last day in the home page."
+Rather than a one-off toggle, the "Before you go" card is a row on the
+booking's Messages list (`messagePlan`, kind `lastDayCard`, channel
+"Guest page") with the same switch as the sends, writing to the same
+`mutedMessages` array the guest page reads. A showing, not a send: its
+status says when it appears ("On their page from …"), "On their page
+now", or a receipt after checkout with no switch. Rule reaffirmed: every
+per-stay decision about what a guest gets — sent or shown — lives in
+one list with one switch, so the drawer can never disagree with the
+page. Also 2026-09-20: Insights labels name the tab a guide section was
+opened on ("Opened Getting in on Arrival") — the events were recorded
+all along, the wording hid it; stay-story times read to the second.
