@@ -731,3 +731,34 @@ sizing, not centring. When a component that centres itself moves into
 a flex parent, wrap it in a block — or give it `w-full`. Measure
 `page.scrollWidth === page.clientWidth` on every screen at 390px after
 any shell change; the check is one line in the iframe.
+
+## 2026-09-23 — A moved clean window never reached the host's own calendar
+
+**What happened.** A guest bought a 4 PM checkout; the clean moved from
+11 AM–3 PM to 4 PM–8 PM and the cleaner was re-invited (status back to
+"invited", fresh ICS with a bumped SEQUENCE under the same UID, so her
+Google entry moved in place). Cullan asked whether the calendar update
+had gone out — and the answer exposed two gaps beside the one he asked
+about.
+
+**Gap 1: no host copy.** The manual invite path sends the host their own
+copy ("how the clean reaches their own calendar"); `reinviteMovedCleans`
+sent only the cleaner's. So every moved window left the host's own diary
+showing the old hour. Fixed: the same attachment now goes to both.
+
+**Gap 2: a failed send was silent.** `sendEmail` returns
+`true | {ok:false,error}` and never throws. The manual invite path reads
+that and tells the host `mailed: false`; the re-invite ignored it. A
+bounced re-invite would leave the page reading "invited" while the
+cleaner's calendar kept the old time — discovered only by somebody
+arriving to a dirty flat. Fixed: a failed send calls `reportServerError`.
+
+**Lesson.** A return value that reports failure is only as good as its
+least careful caller — grep every call site when a helper returns errors
+instead of throwing. And any calendar write that exists on the manual
+path needs the same twin on the automatic one.
+
+**Note on forensics.** Render's log retention had aged past the event, and
+Resend has no list-sent-mail endpoint, so delivery itself could not be
+proven after the fact — only that the code ran. Worth keeping in mind:
+the app's own state (status, invitedAt, sequence) is the durable record.
