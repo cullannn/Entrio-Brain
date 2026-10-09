@@ -1282,3 +1282,8 @@ spans past and present — money owed looks backwards where cover looks
 forward — newest first, with its own count; the lede says what's owed.
 `stateOf` got an explicit coverage union so "unpaid" (a scope, never a
 state) couldn't leak into the calendar's day marks.
+Reversed the same day, by Cullan's choice: he wants every past clean
+counted and will tick them off himself, so `PAY_LEDGER_FROM` is gone and
+`owesPayment` counts any accepted, done, unticked clean however old. The
+forward-looking default was right to offer; the host overriding it with
+a backlog he'd rather work down is the decision that stands.
