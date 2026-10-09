@@ -788,3 +788,42 @@ a `soon(0)` arrival; the suite had covered +5 days and −1 day but never 0.
 one: the fix was written, tested and passing — then sat uncommitted
 across a session break for over two weeks while production kept the
 bug. Before ending a session, `git status` is part of "done".
+
+## 2026-10-09 — A HEIC upload ran the web instance out of memory
+
+**What happened.** Uploading an iPhone HEIC to a property's Arrival
+section failed with "couldn't be uploaded. Check your connection, or try
+a JPG." Twice. Render's service events showed the cause: two
+`server_failed … oomKilled {memoryLimit: 512Mi}`, one per attempt. Each
+took the whole web instance — every guest page — down for ~10 seconds.
+
+**Cause.** Outside Safari a browser can't decode HEIC, so the client's
+downscaler passed the file to the server untouched. The server tried
+sharp (whose prebuilt binaries lack the HEVC decoder) and fell back to
+libheif's wasm build; a 12-megapixel decode plus the Next process
+exceeded the Starter instance's 512 MB. The client caught the gateway's
+non-JSON reply and blamed the host's connection.
+
+**Fix (affbf83).** Decode in the browser: `lib/heic.ts` loads libheif-js's
+self-contained ESM wasm bundle on demand (its own 1.4 MB chunk, only
+when a HEIC is picked), paints to canvas, and the existing downscaler
+encodes WebP/JPEG. A HEIC never leaves the browser as itself; failure
+tells the host to export a JPG. The server's wasm fallback is removed —
+a raw HEIC is refused with a way out. One `uploadPhoto` helper for both
+controls; its errors distinguish "no reply" from "bad reply" from the
+server's own words. Verified end-to-end in Chrome (which has no native
+HEIC): a HEIC with an empty type left as `image/webp`, decodable at its
+original dimensions.
+
+**Lessons.** (1) On a 512 MB instance, any per-request decode of
+untrusted, unbounded media is a site-wide outage risk — push heavy
+decoding to the client or a separate worker, never the web process.
+(2) Render's events API (`/services/{id}/events`) names OOM kills
+explicitly even when the logs API has nothing; check it first when an
+upload "times out". (3) An error message that guesses a cause ("check
+your connection") sends the host down the wrong path — say what is known.
+
+Found while testing: the new-host `WelcomeFlow` called
+`createPortal(…, document.body)` during the server render and threw on
+every new account's first page (since 2026-08-04). Guarded with a
+`useSyncExternalStore` mounted flag.
