@@ -1255,3 +1255,30 @@ all along, the wording hid it; stay-story times read to the second.
 Refined the same day: the card itself — the checkout time — always
 shows; the switch hides only the host's note inside it, the part a host
 might rather say in person.
+
+## 2026-10-09 — Turnovers keep a pay ledger for the cleaners
+
+Cullan: a Paid checkbox on the schedule, tickable only from the day of
+the checkout, with a number to say what's still unpaid. `paidAt` on
+`ReservationCleaning` — the host's own ledger; Entrio moves no money and
+the cleaner never sees it. Rules live in `lib/cleaning.ts`: `cleanDay`
+(a turnover's day is its checkout, a mid-stay's its own), `isPayable`
+(a cleaner to pay: accepted or still-invited; not self, declined or
+uncovered), `owesPayment` (accepted, unticked, day arrived, on/after
+`PAY_LEDGER_FROM`). The day gate is enforced server-side in
+`setCleaningPaid`, not just by the disabled box.
+
+Forward-looking by design, the same rule Cullan set for the message
+switches: `PAY_LEDGER_FROM = 2026-10-09`. Every earlier clean was paid
+the way it always was and never recorded, so an unticked box there means
+"untracked", not "unpaid" — counting them would have opened with a badge
+of every clean ever done. They still show a box, so one can be recorded,
+but never count.
+
+The count joins the Turnovers badge (`hostOutstanding` now returns
+`unpaid`, folded into `cleans` and `total`): one number for everything
+in that tab wanting the host. An "Unpaid" filter is the one scope that
+spans past and present — money owed looks backwards where cover looks
+forward — newest first, with its own count; the lede says what's owed.
+`stateOf` got an explicit coverage union so "unpaid" (a scope, never a
+state) couldn't leak into the calendar's day marks.

@@ -762,3 +762,29 @@ path needs the same twin on the automatic one.
 Resend has no list-sent-mail endpoint, so delivery itself could not be
 proven after the fact — only that the code ran. Worth keeping in mind:
 the app's own state (status, invitedAt, sequence) is the durable record.
+
+## 2026-09-24 — A same-day booking got no welcome message
+
+**What happened.** A last-minute booking (made and arriving the same day)
+showed "Wasn't sent" for its welcome. The guest — hours from the door,
+the one who most needs their link — got nothing.
+
+**Cause.** Adoption greeted only stays where `remote.checkIn > since`,
+with `since = todayIso()`. A strict comparison of ISO date strings, so a
+stay arriving *today* failed it: no send attempted and, worse, no
+`welcomeDueAt` debt recorded, so the sweep had nothing to pay later. The
+guard was meant to stop history being blasted on first connect; today
+isn't history. The debt sweep had a second, matching gap: it paid only
+`now < checkIn`, which a same-day booking adopted after that hour could
+never satisfy.
+
+**Fix (ed4540a).** `>=` in both adoption branches (new booking and
+calendar-feed twin). The sweep now pays a debt while the stay is running
+(`now < checkOut`) — a debt only exists for a booking that was ahead
+when it arrived, and the message carries the guest's link. Test added for
+a `soon(0)` arrival; the suite had covered +5 days and −1 day but never 0.
+
+**Lesson.** Boundary dates need a test at the boundary. And a process
+one: the fix was written, tested and passing — then sat uncommitted
+across a session break for over two weeks while production kept the
+bug. Before ending a session, `git status` is part of "done".
