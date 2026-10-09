@@ -1287,3 +1287,19 @@ counted and will tick them off himself, so `PAY_LEDGER_FROM` is gone and
 `owesPayment` counts any accepted, done, unticked clean however old. The
 forward-looking default was right to offer; the host overriding it with
 a backlog he'd rather work down is the decision that stands.
+
+## 2026-10-09 — Dark Luxury joins the themes
+
+Cullan asked for a dark version of Luxury: same font, darker colours.
+`luxury-dark` in `src/themes/index.ts` — a theme is data, so nothing
+else changed (picker, preview switcher and `themeFor` all read the
+table). Cormorant and brass kept; ground is warm espresso (#17130f),
+cards #201b16, text ivory (#f2eadc), brass lifted to #c2a06f with
+brass-deep #d6b98d. Two rules for dark palettes, both inherited from
+Urban: "ink" is the text, so it goes light; and brass-deep carries the
+eyebrows, so on dark it lifts *lighter* to keep contrast rather than
+deeper. Deliberately warm beside Urban's cool slate so the two darks
+don't read as duplicates. Passes `npm run themes` (entry code 12.5:1),
+including the advisory faint-label pair Luxury itself fails. The glass
+material inverts correctly because it is mixed from tokens — the
+house-rules band becomes a pale ivory band, as in Urban.
