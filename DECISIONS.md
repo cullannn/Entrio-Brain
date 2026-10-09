@@ -1303,3 +1303,6 @@ don't read as duplicates. Passes `npm run themes` (entry code 12.5:1),
 including the advisory faint-label pair Luxury itself fails. The glass
 material inverts correctly because it is mixed from tokens — the
 house-rules band becomes a pale ivory band, as in Urban.
+Lightened one step the same day at Cullan's request (a3b304d): ground
+#211c17, cards #2a241e, washes alongside — dim rather than black. Entry
+code 11:1, secondary text 5.7:1; faint lifted to #887c6c (3.8:1).
