@@ -827,3 +827,40 @@ Found while testing: the new-host `WelcomeFlow` called
 `createPortal(…, document.body)` during the server render and threw on
 every new account's first page (since 2026-08-04). Guarded with a
 `useSyncExternalStore` mounted flag.
+
+## 2026-10-09 — A property linked to a vanished listing, with no way back
+
+**What happened.** A Hospitable-connected property read "Connected to
+Hospitable" on its Calendar tab, but its stored listing id matched none
+of the listings Hospitable returns (Hospitable's own "Copy UUID" showed a
+different id). Its real listing sat in Settings → Channels as "Not in
+Entrio yet" with only "Skip this one" — no way to link. No bookings for
+that flat could reach Entrio: no guest pages, welcomes or cleaner invites.
+
+**Cause.** Two guards that were each sensible alone. `reviewListings`
+offered only properties with *no* `externalRef` for matching, and
+`linkListing` refused to replace *any* existing ref. A ref pointing at a
+listing the channel no longer returns (likely recreated on Hospitable's
+side, new UUID) satisfied both: "linked", so never offered; "already
+linked", so never replaceable. And nothing anywhere said the link was dead.
+
+**Fix (20cbeba).** `staleCheck`: a ref for the channel in use whose id
+isn't in a complete (non-truncated) listing pull is dead. Dead-linked
+properties count as unlinked — offered, suggested ("its current link
+points at a listing that's no longer on your account"), replaceable by
+Link — and `report.stale` drives a clay notice in Settings → Channels.
+A live link is still never overwritten. Matching also learned
+Hospitable's unit-first address ("<unit> <number> <street>").
+
+**Also fixed.** The sync test's `soon()` built UTC dates while the app
+reads Toronto days: every evening after 8pm its "yesterday" equalled the
+app's "today" and five welcome checks failed — invisible in daytime runs.
+Dates now come from `todayIso`.
+
+**Lessons.** (1) A foreign key into someone else's system can go dead
+without any write on our side; every "linked" state needs a liveness
+check against what the remote actually returns, and a visible failure.
+(2) Two guards that each refuse a change can combine into a state no
+UI can leave — test the dead-reference path, not just new and linked.
+(3) Tests that build dates must use the app's own zone; UTC fixtures
+pass all day and fail for four hours every evening.
