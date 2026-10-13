@@ -1306,3 +1306,20 @@ house-rules band becomes a pale ivory band, as in Urban.
 Lightened one step the same day at Cullan's request (a3b304d): ground
 #211c17, cards #2a241e, washes alongside — dim rather than black. Entry
 code 11:1, secondary text 5.7:1; faint lifted to #887c6c (3.8:1).
+
+## 2026-10-13 — Lists read toward what matters; queue tabs count
+
+**Bookings order by scope (e1e87f4).** Now & next and Future run soonest
+first; Past and All run newest first. All is mostly history, and sorted
+oldest-first a long record buries this week under last year. Turnovers'
+Past was already newest first and stays so.
+
+**Turnover tab counts (2121464).** Uncovered and Invited wear the same
+count pill as Unpaid: the jobs ahead in that state, for the property
+filtered to. All and Accepted stay bare — they're where things end up,
+not things to do. A pill shows only above zero.
+
+**Scope tabs wrap on a phone.** Six tabs don't fit 350px, and an
+`overflow-x-auto` row reads as something to drag. The Turnovers row now
+wraps to a second line. Reservations and Insights still use the
+scrolling row; move them over if they get the same complaint.
