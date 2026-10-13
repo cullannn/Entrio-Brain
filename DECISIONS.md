@@ -1319,7 +1319,8 @@ count pill as Unpaid: the jobs ahead in that state, for the property
 filtered to. All and Accepted stay bare — they're where things end up,
 not things to do. A pill shows only above zero.
 
-**Scope tabs wrap on a phone.** Six tabs don't fit 350px, and an
-`overflow-x-auto` row reads as something to drag. The Turnovers row now
-wraps to a second line. Reservations and Insights still use the
-scrolling row; move them over if they get the same complaint.
+**Scope tabs: one line, sideways only (5945f35).** Six tabs don't fit
+350px. Wrapping them to two lines was tried first (2121464) and turned
+down the same day — Cullan wants one line that swipes left and right.
+The complaint was never the sideways swipe; it was the row also dragging
+up and down (see INCIDENTS 2026-10-13).

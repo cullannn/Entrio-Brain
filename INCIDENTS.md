@@ -864,3 +864,28 @@ check against what the remote actually returns, and a visible failure.
 UI can leave — test the dead-reference path, not just new and linked.
 (3) Tests that build dates must use the app's own zone; UTC fixtures
 pass all day and fail for four hours every evening.
+
+## 2026-10-13 — Scope tabs dragged up and down on a phone
+
+**Symptom.** On a phone, the Turnovers scope tabs (All, Uncovered, …,
+Past) could be dragged vertically as well as swiped sideways.
+
+**Cause.** The active tab's underline was positioned `-bottom-px` so it
+would overlap the divider rule below the row. The row is
+`overflow-x-auto`, and CSS can't scroll one axis only: setting x to
+auto turns y's `visible` into `auto` too. The underline's 1px of
+overflow made the row a vertical scroller, 33px of content in a 32px
+box.
+
+**Fix (5945f35).** The row shuts y explicitly (`overflow-y-hidden`,
+plus `overscroll-x-contain`), overlaps the rule itself with `-mb-px`,
+and the underline sits at `bottom-0` inside it, so it still covers the
+rule. Verified live: scrollHeight equals clientHeight; sideways scroll
+still works.
+
+**Still open.** Reservations and Insights use the same row with the
+same `-bottom-px` underline, so they very likely have the same drag.
+
+**Lesson.** Anything absolutely positioned past the edge of an
+`overflow-x-auto` box makes it scroll vertically. A one-axis scroller
+needs the other axis set to hidden explicitly.
