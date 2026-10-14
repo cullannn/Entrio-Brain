@@ -889,3 +889,31 @@ same `-bottom-px` underline, so they very likely have the same drag.
 **Lesson.** Anything absolutely positioned past the edge of an
 `overflow-x-auto` box makes it scroll vertically. A one-axis scroller
 needs the other axis set to hidden explicitly.
+
+## 2026-10-14 — Nearby's category chips couldn't be scrolled on a phone
+
+**Symptom.** On the guest page's Nearby screen, the category chip row
+(Morning, Dining, …) ran past the screen edge and couldn't be swiped,
+so the chips beyond the edge were unreachable.
+
+**Cause.** The guest page is a four-screen pager that handles sideways
+drags itself (c7151b1: the track is `touch-pan-y` and a non-passive
+`touchmove` moves it). The handler took *every* sideways drag, wherever
+it started: it called `preventDefault()` and turned the page. A
+sideways scroller nested inside a screen never got its own gesture. The
+hero photo carousel on the Stay screen sits inside the same pager and
+had the same problem.
+
+**Fix (a431eaa).** On `touchstart` the pager walks up from the target
+to the track. If it passes an element that scrolls sideways and
+actually overflows, the pager yields the whole gesture and the browser
+scrolls that element natively. A scroller resets an ancestor's
+`touch-action` for its own content, so `pan-y` on the track doesn't
+block it. The chip row also gained `overscroll-x-contain`, so reaching
+its end doesn't hand the drag on. Checked live with synthetic touches:
+a drag on a chip is left alone, while a drag on text is still taken by
+the pager. Native scrolling itself has to be confirmed on a device.
+
+**Lesson.** A custom gesture handler on a container owns nothing inside
+it that has a gesture of its own. Check for nested scrollers before
+claiming the drag.
