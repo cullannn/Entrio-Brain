@@ -912,7 +912,7 @@ scrolls that element natively. A scroller resets an ancestor's
 block it. The chip row also gained `overscroll-x-contain`, so reaching
 its end doesn't hand the drag on. Checked live with synthetic touches:
 a drag on a chip is left alone, while a drag on text is still taken by
-the pager. Native scrolling itself has to be confirmed on a device.
+the pager. Native chip scrolling confirmed on Cullan's phone (2026-10-16).
 
 **Lesson.** A custom gesture handler on a container owns nothing inside
 it that has a gesture of its own. Check for nested scrollers before
