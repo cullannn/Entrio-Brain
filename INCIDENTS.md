@@ -917,3 +917,39 @@ the pager. Native chip scrolling confirmed on Cullan's phone (2026-10-16).
 **Lesson.** A custom gesture handler on a container owns nothing inside
 it that has a gesture of its own. Check for nested scrollers before
 claiming the drag.
+
+## 2026-10-16 — Reorder grips looked dead on a phone
+
+**Symptom.** In the host's Nearby editor on a phone, pressing a place's
+grip dimmed the row, but dragging up or down "didn't do anything".
+
+**Cause.** Not a broken gesture: `EditableList` already used pointer
+events with capture and `touch-none` on the grip. The problem was
+scale. A place is a six-field card, roughly 400px tall stacked at
+phone width, and the list only drew a drop line when the finger
+crossed into a *neighbouring* row's box. A thumb had to travel about
+half a screen with nothing moving under it, and the next card was
+often off-screen with no auto-scroll to reach it. Two smaller hazards
+sat alongside. A held press could start iOS text selection. And a
+downward drag at the top of the page armed pull-to-refresh, whose
+`touchmove` listener sees the same touch.
+
+**Fix (8359104).**
+- The carried row follows the finger, with a transform written straight
+  to its style, so a pointermove doesn't re-render every field. It
+  lifts (`bg-bone shadow-raise z-10`) instead of fading.
+- Row boxes are measured once at pickup in the scroller's content
+  space. A transform doesn't move layout, so they stay valid however
+  far the page scrolls.
+- A rAF loop scrolls the nearest scroller (`#host-scroll` on a phone)
+  when the finger is within 88px of its edge.
+- The grip is `select-none` with no touch callout. It carries
+  `data-gesture`, which pull-to-refresh now treats as spoken for.
+
+Checked live with synthetic pointer events: a 40px move gives a 40px
+translate, the drop line appears on crossing, and moving back and
+releasing leaves the order unchanged. Edge-scroll needs a device.
+
+**Lesson.** "Works with touch" isn't enough. At phone scale a gesture
+has to show something under the finger in its first few pixels, or it
+reads as broken however correct the hit-testing is.
