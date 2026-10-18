@@ -1324,3 +1324,37 @@ not things to do. A pill shows only above zero.
 down the same day — Cullan wants one line that swipes left and right.
 The complaint was never the sideways swipe; it was the row also dragging
 up and down (see INCIDENTS 2026-10-13).
+
+## 2026-10-18 — SEO pass two: speed, the site's name, honest dates
+
+Cullan asked for SEO "really good so Google can find it easily". Crawling
+was already sound (Lighthouse SEO 100, robots, sitemap, canonicals,
+301s to the bare https domain, real 404s). What moved, in 9b39d48:
+
+- **Speed, which Google does rank on.** Every page preloaded all eight
+  font families: 23 files, 418 KB, ahead of first paint. Now only Inter
+  and Cormorant preload (`preload: false` on the six theme faces, which
+  load when a page uses them). The hero and phone-deck photos got AVIF
+  siblings (273 → 102 KB, 264 → 27 KB); the hero is `fetchPriority="high"`.
+  Home on Lighthouse mobile: performance 79 → 91, LCP 5.2s → 3.4s, page
+  weight 953 → 575 KB. A guide scores 95.
+- **Structured data in one module** (`src/lib/structured-data.ts`). Home
+  is a graph of Organization, WebSite (the site name Google prints over a
+  result) and SoftwareApplication, whose offers are monthly CAD from
+  PLANS. Each guide is an Article with dates, image and an embedded
+  publisher, plus a BreadcrumbList. The hub is a CollectionPage listing
+  the guides. The schema.org validator shows 0 errors and 0 warnings on
+  all five pages.
+  Google reads each page alone, so an @id pointing at a node declared on
+  another page resolves to nothing. That's why guides embed the whole
+  ORGANIZATION object rather than referencing it.
+- **Dates only where true.** The guide registry carries `published` and
+  `updated`. They feed the Article, the sitemap's lastmod (guides and the
+  hub only) and a printed "Updated …" line. Google trusts a date it can
+  also see, and ignores lastmod from sitemaps that lie, so the other
+  pages carry none.
+- **Copy sized to Google's cut.** The home title now says "for Airbnb
+  hosts" (66 chars). The description went from 224 characters to 155.
+  Sign-in gets a canonical, because `/signin?next=…` is where every
+  gated URL lands. `/favicon.ico` rewrites to the generated icon instead
+  of a 26 KB 404.

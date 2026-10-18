@@ -147,4 +147,9 @@ tests/timezone-days.test.ts, including the DST changeover.
   sitemap submitted (Aug 20). Once Performance data accumulates, read the
   Queries table and write the next /guides pages against queries ranking
   15–30. Guides are registry-driven (src/components/guides/registry.ts):
-  one entry + one page = hub, sitemap and cross-links all update.
+  one entry + one page = hub, sitemap and cross-links all update. A new
+  guide also needs `published`/`updated` dates; move `updated` only for
+  a real edit.
+  (2026-10-18) After the SEO pass, resubmit the sitemap in Search Console
+  and check Pages → indexed. Run the Rich Results Test on / and one guide.
+  Only Cullan's Google login can do either.

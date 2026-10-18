@@ -953,3 +953,26 @@ releasing leaves the order unchanged. Edge-scroll needs a device.
 **Lesson.** "Works with touch" isn't enough. At phone scale a gesture
 has to show something under the finger in its first few pixels, or it
 reads as broken however correct the hit-testing is.
+
+## 2026-10-18 — Cleaner pages were indexable, and two smaller SEO slips
+
+Found during an SEO audit, not reported by anyone.
+
+**Cleaner pages had no noindex.** robots.ts deliberately leaves `/stay`
+and `/clean` crawlable, so Google can read their noindex. Its comment
+said the cleaner pages carried one. They didn't: `/clean/[token]` and
+`/clean/schedule/[token]` returned 200 with no robots meta. A leaked
+link could have become a search result for a page that is a credential.
+Both now set `robots: { index: false, follow: false }`.
+
+**"Entrio Entrio Basic".** The home JSON-LD prefixed each plan's name
+with "Entrio", but PLANS names already carry it. The invite page's title
+also said Entrio twice ("Cleaning invite · Entrio · Entrio"), because it
+typed the suffix the root template adds.
+
+**Lesson.**
+- A comment that says something is in place is a claim, not a check. For
+  a rule like "tokened pages are noindex", fetch one bad token per route
+  as a crawler and look for the tag.
+- When a template appends text (the title's " · Entrio", a name prefix),
+  don't type it again by hand.
