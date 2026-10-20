@@ -976,3 +976,28 @@ typed the suffix the root template adds.
   as a crawler and look for the tag.
 - When a template appends text (the title's " · Entrio", a name prefix),
   don't type it again by hand.
+
+## 2026-10-20 — A cancelled booking left its clean in the cleaner's calendar
+
+Cullan asked; nobody had been caught by it yet.
+
+**What happened.** A stay could be cancelled by a calendar feed or the
+channel sync, or deleted by the host. Any of these only flipped
+`status` or deleted the row. The clean disappeared from the cleaner's
+schedule page and the host's Turnovers, because both filter cancelled
+stays. Nothing was sent, though.
+- The cleaner's phone calendar kept the entry from the invite.
+- The invite link still rendered the job, arrival instructions and door
+  code included.
+- The link still took an accept.
+
+A cleaner working from their calendar would have turned up to clean a
+flat nobody stayed in. Telling the cleaner had only ever been wired to
+the host's own buttons (withdraw, "I'll do it").
+
+**Fix (14f4bff).** See DECISIONS 2026-10-20.
+
+**Lesson.** Every side effect hangs off a transition. When a feature adds
+a promise ("the cleaner's calendar matches the schedule"), list every
+path that can cause the transition: syncs, deletes, cascades, not just
+the buttons. Here that was four paths, and none of them told the cleaner.

@@ -1358,3 +1358,39 @@ was already sound (Lighthouse SEO 100, robots, sitemap, canonicals,
   Sign-in gets a canonical, because `/signin?next=…` is where every
   gated URL lands. `/favicon.ico` rewrites to the generated icon instead
   of a 26 KB 404.
+
+## 2026-10-20 — A stay that goes away tells its cleaner
+
+Cullan asked whether a guest cancelling a future booking reaches the
+cleaner. It didn't (see INCIDENTS 2026-10-20). Now it does, in 14f4bff.
+A stay goes four ways: cancelled at the channel, dropped from a calendar
+feed, deleted by the host, or deleted with its property. All four run
+through `src/lib/cleaning-cancel.ts`.
+
+- **Who is told.** Every future clean on the stay (turnover and mid-stay)
+  with a cleaner invited or accepted. The cleaner gets a plain mail with
+  a METHOD:CANCEL under the invite's UID, plus a push. The host gets the
+  copy that clears their own calendar entry, as they got a copy of the
+  invite. Past cleans (the ledger's), declined, self and empty slots
+  send nothing.
+- **Once.** The cancel is made under the row lock, and only the call
+  that flipped the status tells anyone, so the cron and a manual sync
+  racing mail once. Neither sync ever revives a cancelled stay, so
+  "cancelled" is final and the cleaning record is kept on it as history.
+- **Neighbours.** A same-day arrival that no longer arrives gives the
+  clean before it its full four hours back. That cleaner is re-invited
+  with the moved window. `reinviteMovedCleans` now skips cancelled stays,
+  so a cancel can't re-ask a cleaner for a dead stay.
+- **The dead link.** `/clean/[token]` on a cancelled stay says so, with
+  no answer control and no arrival sections (it used to keep showing the
+  door code). `respondToCleaning` refuses, before and under the lock, so
+  a calendar RSVP is refused too.
+- **The cancel's organizer.** It is the invite's own: the RSVP
+  plus-address when ENTRIO_RSVP_INBOUND is set (it is in production),
+  the host otherwise. Withdrawals had been signed with the host's
+  address, a stranger to the calendar entry. All three cancel paths now
+  share `cleaningCancelAttachment`.
+- **No false cancels.** The channel sync's "vanished, so cancelled" pass
+  now skips truncated pulls and properties that aren't linked. Their
+  absence says nothing about the stays. That used to cost a status flip;
+  now it costs a clean.
