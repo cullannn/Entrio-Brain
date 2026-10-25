@@ -1030,7 +1030,10 @@ reachable. Nothing in the logs or service events shows exploitation:
 no crashes, no restarts, no strange output. But logs can't rule out
 something quiet.
 
-**Fix (42de30b).** See DECISIONS 2026-10-25.
+**Fix (42de30b, then 44f6b38).** See DECISIONS 2026-10-25. The caller came
+back that afternoon with an account of their own (signup is open) and
+probed `/verify`. That reached only their own unverified account and
+sent no mail, but the first guard hadn't covered signed-in actions.
 
 **Lesson.** Nothing was watching the dependencies. The advisories were
 public while 16.2.12 kept shipping. Run `npm audit --omit=dev` as part of

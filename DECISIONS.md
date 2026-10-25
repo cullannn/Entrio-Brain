@@ -1416,8 +1416,14 @@ array of strings made `form.get` throw. That reached nothing, but every
 throw emailed an alert. `isForm()` in `src/lib/form-guard.ts` runs first
 in the six actions that have no session to check: sign-in, register,
 both reset steps, contact and the admin door. A non-form gets
-`NOT_A_FORM`. Actions behind `requireAccount`/`requireAdmin` don't need
-it, because the session check comes first.
+`NOT_A_FORM`.
+
+*Corrected the same afternoon (44f6b38).* I first left out the
+signed-in actions, on the grounds that the session check comes first.
+But anyone can make an account. The same caller came back signed in as
+one and sent `/verify` an empty body. Now all 19 actions that take
+FormData check `isForm()` first. `junk-requests.test.ts` scans the
+source and fails on one that doesn't.
 
 **`isMalformedRequest` in error-alert.** Failures only a hand-made
 request can produce are logged but don't email:
