@@ -92,6 +92,22 @@ delete them.
 
 - [ ] Keep this brain updated every session that changes architecture,
       scope, or key behaviour (protocol in README).
+- [ ] **Dependency alerts** (2026-10-25). Turn on Dependabot security
+      alerts for the app repo (GitHub settings, Cullan's login), and run
+      `npm audit --omit=dev` before any deploy. Next sat on open critical
+      advisories unnoticed.
+- [ ] **eslint-config-next 16.4.x** (2026-10-25). Held at 16.2.12. The
+      repo already has 22 lint errors on its current plugin (react-hooks
+      set-state-in-effect, refs, purity, immutability), and they come
+      before any bump. Fix those, then move the config with Next.
+- [ ] **Admin door throttle is per IP only** (2026-10-25). Sign-in also
+      counts per address; the admin door can't usefully do that, because
+      there's one address. A botnet shares the work. The password's
+      length is the real defence, so keep ENTRIO_ADMIN_PASSWORD long and
+      random. A global cap would stop that, at the price of letting a
+      stranger lock the owner out.
+- [ ] **`middleware.ts` → `proxy.ts`.** Next warns on every build that
+      the middleware convention is deprecated.
 
 ## From the 2026-08-06 eight-persona walkthrough (deferred, not forgotten)
 - ~~Unsaved-changes guard in the property editor~~ — solved the better way

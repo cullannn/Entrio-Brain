@@ -1394,3 +1394,45 @@ through `src/lib/cleaning-cancel.ts`.
   now skips truncated pulls and properties that aren't linked. Their
   absence says nothing about the stays. That used to cost a status flip;
   now it costs a clean.
+
+## 2026-10-25 — Next 16.4.3, no image optimizer, and junk requests stop paging
+
+**Next 16.2.12 → 16.4.3, sharp 0.35.3 → 0.35.5.** 16.2.12 was inside
+several published unauthenticated-RCE advisories. Two of them hit code we
+serve: `next/og` (the share card and both icons) and the image optimizer
+(an AVIF in `public/` was enough). `npm audit --omit=dev` is clean on
+16.4.3. `eslint-config-next` stays on 16.2.12 for now: the new one is
+lint-only and not part of the fix (see TODO).
+
+**`images: { unoptimized: true }`, so `/_next/image` is a 404.** Nothing
+uses `next/image`, since photos are pre-built by `npm run photos`. The
+endpoint did no work for us and was where three of the critical
+advisories lived (AVIF, SVG, SSRF). Re-enable it with the first
+`<Image>`, and run `npm audit` when you do.
+
+**Public form actions check they were given a form.** A server action's
+id is in the page source, so anyone can POST any body to it. A JSON
+array of strings made `form.get` throw. That reached nothing, but every
+throw emailed an alert. `isForm()` in `src/lib/form-guard.ts` runs first
+in the six actions that have no session to check: sign-in, register,
+both reset steps, contact and the admin door. A non-form gets
+`NOT_A_FORM`. Actions behind `requireAccount`/`requireAdmin` don't need
+it, because the session check comes first.
+
+**`isMalformedRequest` in error-alert.** Failures only a hand-made
+request can produce are logged but don't email:
+- an action id in the wrong shape
+- a router-state header that won't parse
+- inside an action, a body that isn't JSON or ends early ("Connection
+  closed.")
+
+The last group share messages with real failures. Our code reads JSON
+from Places, the AI and the channels, and a broken upstream throws the
+same SyntaxError. So they only count when the stack never enters our
+build. Turbopack names the chunks it copies out of Next `node_modules_…`,
+so a frame under `.next/server/` without `node_modules` is ours. This was
+checked against real stacks on 16.4.3, and could shift on a Next upgrade:
+the test pins the shapes.
+
+"Failed to find Server Action" stays loud: it is an old tab as often as a
+bot.

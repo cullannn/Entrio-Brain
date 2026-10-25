@@ -1001,3 +1001,39 @@ the host's own buttons (withdraw, "I'll do it").
 a promise ("the cleaner's calendar matches the schedule"), list every
 path that can cause the transition: syncs, deletes, cascades, not just
 the buttons. Here that was four paths, and none of them told the cleaner.
+
+## 2026-10-25 — An hour of hand-made requests, and a framework with open RCEs
+
+Cullan asked why Entrio had "a lot of errors".
+
+**What happened.** For about an hour, someone sent roughly 30 hand-built
+server-action requests at `/signin` and `/admin/unlock`. They used real
+action ids lifted from the page, with bodies that were JSON arrays,
+URL-encoded JSON, or not JSON at all. They also tried the documented
+default admin address.
+
+Every one threw before a password was checked: in Next's body decoding,
+or at the first `form.get` on a string. So nothing was guessed and
+nothing got in. But each distinct throw emailed an alert, about 20 of
+them. A few more requests went through without an Origin header. Those
+can only have been ordinary wrong-password answers, and too few to reach
+the 10-per-15-minutes limit.
+
+Render puts the real client IP first in X-Forwarded-For (their stated
+behaviour), so the per-IP throttle can't be dodged by faking the header.
+
+Looking into it, `npm audit` turned up the real problem. The running
+16.2.12 was inside several critical unauthenticated-RCE advisories,
+including `next/og` and the image optimizer, both of which we served.
+The AVIF photos added on 2026-10-18 made the optimizer's AVIF advisory
+reachable. Nothing in the logs or service events shows exploitation:
+no crashes, no restarts, no strange output. But logs can't rule out
+something quiet.
+
+**Fix (42de30b).** See DECISIONS 2026-10-25.
+
+**Lesson.** Nothing was watching the dependencies. The advisories were
+public while 16.2.12 kept shipping. Run `npm audit --omit=dev` as part of
+any session that deploys, or switch on GitHub's Dependabot alerts.
+Separately, an alert that a stranger can trigger at will is a way to
+fill an inbox, so anything public should fail quietly on junk.

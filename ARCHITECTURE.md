@@ -4,7 +4,7 @@
 
 ## Stack
 
-Next.js 16.2.12 (App Router, Turbopack) · React 19 · TypeScript · Tailwind v4
+Next.js 16.4.3 (App Router, Turbopack) · React 19 · TypeScript · Tailwind v4
 · Postgres via `pg` (pooled) · no ORM, no test framework, no state library.
 
 ⚠️ This Next.js version has breaking changes vs. public docs. The main repo's
