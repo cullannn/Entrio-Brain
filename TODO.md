@@ -84,6 +84,10 @@ delete them.
 - [ ] Hospitable real integration (needs OAuth2 + registered client).
 - [ ] Automations / messaging — **cut on purpose** (DECISIONS 2026-08-01);
       do not reintroduce without being asked.
+- [ ] Reviews read from a channel once one is connected (today they're
+      the host's ticks; DECISIONS 2026-10-26). First check that the API
+      actually exposes reviews.
+- [ ] "Gift owed" in a badge? Offered 2026-10-26, not built.
 - [ ] A live unverified test account exists in local data — offered to
       remove it, no answer yet. (Details in local memory, not here — public
       repo.)

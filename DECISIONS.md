@@ -1442,3 +1442,35 @@ the test pins the shapes.
 
 "Failed to find Server Action" stays loud: it is an old tab as often as a
 bot.
+
+## 2026-10-26 — After a stay: a review tick, and a gift card tick under it
+
+Cullan: a way to see whether a guest left a review, and if they did, a
+box to tick once the thank-you gift card has gone out. Entrio can't see
+reviews: the iCal feeds name nobody, Airbnb gives hosts no reviews API,
+and no channel API is connected. So both are the host's own ticks, the
+same kind of ledger as a cleaner's `paidAt`: `reviewedAt` and
+`giftCardSentAt` on the reservation, set to null when taken back (e3c0b49).
+
+The rules live in `lib/review.ts` (`reviewMarkChange`), and
+`setReviewMark` runs them under the row lock:
+- A tick is allowed from the checkout day, in the property's timezone,
+  and never on a cancelled stay. Taking a tick back is never gated on the
+  day.
+- No gift without a review. The review can't be unticked while the gift
+  is ticked as sent: untick the gift first, so a slipped thumb never
+  erases the record that something went out.
+- A second tap keeps the first moment.
+
+Where it shows:
+- **Booking drawer:** a Review card once checkout has passed. It sits
+  above the hand-written email, which is often how the gift is sent.
+- **Hint beside the review tick:** the guest page's existing
+  `review_click` event, e.g. "They tapped Leave a review on their page
+  2 days ago". A tap isn't a review, so it never ticks anything. The
+  data comes from `getReviewClicks`, one grouped query.
+- **Past tab:** the Link column becomes Review, showing No review, Gift
+  owed or Gift sent. Once the guest has left, the link has done its job,
+  and the review is what's still open.
+
+"Gift owed" isn't counted in any badge yet. That was offered and not built.
