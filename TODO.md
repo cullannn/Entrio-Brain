@@ -87,7 +87,8 @@ delete them.
 - [ ] Reviews read from a channel once one is connected (today they're
       the host's ticks; DECISIONS 2026-10-26). First check that the API
       actually exposes reviews.
-- [ ] "Gift owed" in a badge? Offered 2026-10-26, not built.
+- [ ] "Gift owed" in the sidebar badge? Offered 2026-10-26. The Bookings
+      tab has its own count; the sidebar doesn't.
 - [ ] A live unverified test account exists in local data — offered to
       remove it, no answer yet. (Details in local memory, not here — public
       repo.)

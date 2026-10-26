@@ -1473,4 +1473,8 @@ Where it shows:
   owed or Gift sent. Once the guest has left, the link has done its job,
   and the review is what's still open.
 
-"Gift owed" isn't counted in any badge yet. That was offered and not built.
+"Gift owed" isn't counted in the sidebar badge. Cullan asked for a filter
+instead, so Bookings gained a **Gift owed** tab the same day (after
+Past). It lists every stay with a ticked review and an unticked gift,
+newest first and however old, like Turnovers' Unpaid. The count on the
+tab follows the property filter, and the tab shows the Review column.
